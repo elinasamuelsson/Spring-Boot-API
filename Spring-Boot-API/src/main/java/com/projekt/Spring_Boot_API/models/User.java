@@ -18,17 +18,23 @@ import java.util.UUID;
 public class User {
     @Id
     @GeneratedValue (strategy = GenerationType.UUID)
-    private UUID user_id;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column (nullable = false, unique = true)
     private String username;
 
-    @Column (nullable = false)
-    private String password_hash;
+    @Column (name = "password_hash", nullable = false)
+    private String passwordHash;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Folder> folders;
 
-    @OneToMany (mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany (mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Item> items;
+
+    public User(String username, String passwordHash) {
+        this.username = username;
+        this.passwordHash = passwordHash;
+    }
 }
