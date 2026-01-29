@@ -38,6 +38,13 @@ public class UserController {
                 .body(UpdatedUserDTO.from(user));
     }
 
+    @DeleteMapping("/delete/user/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
+        userService.deleteUser(userId);
+
+        return  ResponseEntity.ok().build();
+    }
+
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity

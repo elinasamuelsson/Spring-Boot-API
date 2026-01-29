@@ -49,6 +49,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public void deleteUser(UUID userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        userRepository.delete(user);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
