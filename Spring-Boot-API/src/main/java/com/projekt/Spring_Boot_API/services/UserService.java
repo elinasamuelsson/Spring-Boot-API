@@ -1,8 +1,8 @@
 package com.projekt.Spring_Boot_API.services;
 
-import com.projekt.Spring_Boot_API.exceptions.PasswordEmptyException;
-import com.projekt.Spring_Boot_API.exceptions.UserNotFoundException;
-import com.projekt.Spring_Boot_API.exceptions.UsernameEmptyException;
+import com.projekt.Spring_Boot_API.exceptions.user.PasswordEmptyException;
+import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
+import com.projekt.Spring_Boot_API.exceptions.user.UsernameEmptyException;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IUserRepository;
 import lombok.AllArgsConstructor;

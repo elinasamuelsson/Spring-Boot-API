@@ -1,4 +1,4 @@
-package com.projekt.Spring_Boot_API.exceptions;
+package com.projekt.Spring_Boot_API.exceptions.user;
 
 public class UsernameEmptyException extends RuntimeException {
     public UsernameEmptyException() {

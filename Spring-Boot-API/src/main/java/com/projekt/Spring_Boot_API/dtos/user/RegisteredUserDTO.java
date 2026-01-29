@@ -1,4 +1,4 @@
-package com.projekt.Spring_Boot_API.dtos;
+package com.projekt.Spring_Boot_API.dtos.user;
 
 import com.projekt.Spring_Boot_API.models.User;
 

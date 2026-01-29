@@ -1,9 +1,9 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.dtos.RegisteredUserDTO;
+import com.projekt.Spring_Boot_API.dtos.user.RegisteredUserDTO;
 import com.projekt.Spring_Boot_API.models.User;
-import com.projekt.Spring_Boot_API.requests.RegisterUserRequest;
-import com.projekt.Spring_Boot_API.requests.UpdateUserRequest;
+import com.projekt.Spring_Boot_API.requests.user.RegisterUserRequest;
+import com.projekt.Spring_Boot_API.requests.user.UpdateUserRequest;
 import com.projekt.Spring_Boot_API.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
