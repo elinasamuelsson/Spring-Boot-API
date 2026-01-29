@@ -33,6 +33,22 @@ public class UserService {
         );
     }
 
+    public User updateUser(UUID userId, String username, String password) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (username != null && !username.isBlank()) {
+            user.setUsername(username);
+        }
+
+        if (password != null && !password.isBlank()) {
+            String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+            user.setPasswordHash(passwordHash);
+        }
+
+        return userRepository.save(user);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
