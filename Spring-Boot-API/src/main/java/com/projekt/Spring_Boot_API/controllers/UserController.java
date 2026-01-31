@@ -30,7 +30,7 @@ public class UserController {
 
     @PutMapping("/update/user/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable UUID userId, @RequestBody UpdateUserRequest request) {
-        User user = userService.updateUser(userId, request.username(), request.password());
+        userService.updateUser(userId, request.username(), request.password());
 
         return ResponseEntity.ok().build();
     }
@@ -39,7 +39,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
         userService.deleteUser(userId);
 
-        return  ResponseEntity.ok().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/users")
