@@ -36,7 +36,7 @@ public class UserService {
         return user;
     }
 
-    public User updateUser(UUID userId, String username, String password) {
+    public void updateUser(UUID userId, String username, String password) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(UserNotFoundException::new);
 
@@ -48,8 +48,7 @@ public class UserService {
             String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
             user.setPasswordHash(passwordHash);
         }
-
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public void deleteUser(UUID userId) {
