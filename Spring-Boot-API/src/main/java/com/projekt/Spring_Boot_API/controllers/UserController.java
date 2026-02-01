@@ -14,12 +14,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
-    @PostMapping("/register/user")
+    @PostMapping("/register")
     public ResponseEntity<RegisteredUserDTO> registerUser(@RequestBody RegisterUserRequest request) {
         User user = userService.registerUser(request.username(), request.password());
 
@@ -28,29 +28,29 @@ public class UserController {
                 .body(RegisteredUserDTO.from(user));
     }
 
-    @PutMapping("/update/user/{userId}")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable UUID userId, @RequestBody UpdateUserRequest request) {
         userService.updateUser(userId, request.username(), request.password());
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/user/{userId}")
+    @DeleteMapping("/delete/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
         userService.deleteUser(userId);
 
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/users")
+    @GetMapping("/all") //TODO: Add DTO response entity to manage what shows up
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.getAllUsers());
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable("userId") UUID userId) {
+    @GetMapping("/{userId}") //TODO: Add DTO response entity to manage what shows up
+    public ResponseEntity<User> getUser(@PathVariable UUID userId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.getUserById(userId));
