@@ -3,6 +3,7 @@ package com.projekt.Spring_Boot_API.controllers;
 import com.projekt.Spring_Boot_API.dtos.folder.CreatedFolderDTO;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
+import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
 import com.projekt.Spring_Boot_API.services.FolderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,8 @@ public class FolderController {
 
     @PutMapping("/{userId}/update/{folderId}")
     public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
-                                          @RequestBody CreateFolderRequest request) {
-        folderService.updateFolder(folderId, request.folderName());
+                                          @RequestBody UpdateFolderRequest request) {
+        folderService.updateFolder(folderId, request.folderName(), request.parentFolderId());
 
         return ResponseEntity.ok().build();
     }

@@ -2,6 +2,7 @@ package com.projekt.Spring_Boot_API.services;
 
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNotFoundException;
+import com.projekt.Spring_Boot_API.exceptions.folder.UnauthorizedFolderActionException;
 import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.User;
@@ -39,9 +40,19 @@ public class FolderService {
         return folderRepository.save(folder);
     }
 
-    public void updateFolder(UUID folderId, String folderName) {
+    public void updateFolder(UUID folderId, String folderName, UUID parentFolderId) {
         Folder folder = folderRepository.findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
+
+        if (folder.getParentFolder() == null) {
+            throw new UnauthorizedFolderActionException("Root folder cannot be modified.");
+        }
+
+        if (parentFolderId != null) {
+            Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
+                    .orElseThrow(FolderNotFoundException::new);
+            folder.setParentFolder(parentFolder);
+        }
 
         if (folderName != null && !folderName.isBlank()) {
             folder.setFolderName(folderName);
@@ -51,8 +62,12 @@ public class FolderService {
     }
 
     public void deleteFolder(UUID folderId) {
-        Folder folder =  folderRepository.findByFolderId(folderId)
+        Folder folder = folderRepository.findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
+
+        if (folder.getParentFolder() == null) {
+            throw new UnauthorizedFolderActionException("Root folder cannot be deleted.");
+        }
 
         folderRepository.delete(folder);
     }
