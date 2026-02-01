@@ -16,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class UserService {
     private IUserRepository userRepository;
+    private FolderService folderService;
 
     public User registerUser(String username, String password) {
         if (username == null || username.isEmpty()) {
@@ -28,9 +29,11 @@ public class UserService {
 
         String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
 
-        return userRepository.save(
-                new User(username, passwordHash)
-        );
+        User user = userRepository.save(new User(username, passwordHash));
+
+        folderService.createFolder("root", null, user.getUserId());
+
+        return user;
     }
 
     public User updateUser(UUID userId, String username, String password) {

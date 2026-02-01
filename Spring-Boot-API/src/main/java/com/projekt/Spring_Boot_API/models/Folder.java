@@ -1,5 +1,7 @@
 package com.projekt.Spring_Boot_API.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,22 +20,32 @@ import java.util.UUID;
 public class Folder {
     @Id
     @GeneratedValue (strategy = GenerationType.UUID)
-    private UUID folder_id;
+    @Column (name = "folder_id")
+    private UUID folderId;
 
-    @Column (nullable = false)
-    private String folder_name;
+    @Column (name = "folder_name", nullable = false)
+    private String folderName;
 
     @ManyToOne
     @JoinColumn (name = "parent_folder_id")
-    private Folder parent_folder;
+    @JsonBackReference
+    private Folder parentFolder;
 
-    @OneToMany (mappedBy = "parent_folder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<Folder> sub_folders;
+    @OneToMany (mappedBy = "parentFolder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference
+    private List<Folder> subFolders;
 
     @OneToMany (mappedBy = "folder", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Item> items;
 
     @ManyToOne
-    @JoinColumn (name = "user_id")
+    @JoinColumn (name = "owner_id")
+    @JsonBackReference
     private User user;
+
+    public Folder(String name, Folder parentFolder, User owner) {
+        this.folderName = name;
+        this.parentFolder = parentFolder;
+        this.user = owner;
+    }
 }
