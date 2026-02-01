@@ -31,7 +31,12 @@ public class Folder {
     @JsonBackReference
     private Folder parentFolder;
 
-    @OneToMany (mappedBy = "parentFolder", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(
+            mappedBy = "parentFolder",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
+    )
     @JsonManagedReference
     private List<Folder> subFolders;
 

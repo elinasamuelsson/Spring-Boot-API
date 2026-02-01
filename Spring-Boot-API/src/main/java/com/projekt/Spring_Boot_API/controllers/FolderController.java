@@ -29,6 +29,21 @@ public class FolderController {
                 .body(CreatedFolderDTO.from(folder));
     }
 
+    @PutMapping("/{userId}/update/{folderId}")
+    public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
+                                          @RequestBody CreateFolderRequest request) {
+        folderService.updateFolder(folderId, request.folderName());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{userId}/delete/{folderId}")
+    public ResponseEntity<?> deleteFolder(@PathVariable UUID folderId) {
+        folderService.deleteFolder(folderId);
+
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/{userId}") //TODO: Add DTO response entity to manage what shows up
     public ResponseEntity<List<Folder>> getSubFolders(@PathVariable UUID userId,
                                                       @RequestParam UUID parentFolderId) {

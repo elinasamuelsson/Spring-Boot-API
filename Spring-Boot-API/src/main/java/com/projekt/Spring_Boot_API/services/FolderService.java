@@ -39,6 +39,24 @@ public class FolderService {
         return folderRepository.save(folder);
     }
 
+    public void updateFolder(UUID folderId, String folderName) {
+        Folder folder = folderRepository.findByFolderId(folderId)
+                .orElseThrow(FolderNotFoundException::new);
+
+        if (folderName != null && !folderName.isBlank()) {
+            folder.setFolderName(folderName);
+        }
+
+        folderRepository.save(folder);
+    }
+
+    public void deleteFolder(UUID folderId) {
+        Folder folder =  folderRepository.findByFolderId(folderId)
+                .orElseThrow(FolderNotFoundException::new);
+
+        folderRepository.delete(folder);
+    }
+
     public List<Folder> getSubFolders(UUID userId, UUID parentFolderId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(UserNotFoundException::new);
