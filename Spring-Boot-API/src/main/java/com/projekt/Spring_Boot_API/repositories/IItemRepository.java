@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface IItemRepository extends JpaRepository<Item, UUID> {
+    Optional<Item> findByItemId(UUID itemId);
+
     List<Item> findByFolderAndUser(Folder folder, User user);
 }

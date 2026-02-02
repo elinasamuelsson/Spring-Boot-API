@@ -47,6 +47,30 @@ public class ItemService {
         return itemRepository.save(item);
     }
 
+    public void updateItem(UUID itemId, String itemName, UUID itemLocationId) {
+        Item item = itemRepository.findByItemId(itemId)
+                .orElseThrow(RuntimeException::new);
+
+        if (itemName != null && !itemName.isBlank()) {
+            item.setItemName(itemName);
+        }
+
+        if (itemLocationId != null) {
+            Folder folder = folderRepository.findByFolderId(itemLocationId)
+                    .orElseThrow(FolderNameEmptyException::new);
+
+            item.setFolder(folder);
+        }
+        itemRepository.save(item);
+    }
+
+    public void deleteItem(UUID itemId) {
+        Item item = itemRepository.findByItemId(itemId)
+                .orElseThrow(RuntimeException::new);
+
+        itemRepository.delete(item);
+    }
+
     public List<Item> getItemsInFolder(UUID userId, UUID folderId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -55,5 +79,10 @@ public class ItemService {
                 .orElseThrow(FolderNameEmptyException::new);
 
         return itemRepository.findByFolderAndUser(folder, user);
+    }
+
+    public Item downloadItem(UUID itemId) {
+        return itemRepository.findByItemId(itemId)
+                .orElseThrow(RuntimeException::new);
     }
 }
