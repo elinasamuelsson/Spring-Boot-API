@@ -13,5 +13,5 @@ import java.util.UUID;
 public interface IFolderRepository extends JpaRepository<Folder, UUID> {
     Optional<Folder> findByFolderId(UUID folderId);
 
-    List<Folder> findByParentFolderAndUser(Folder parentFolder, User user);
+    List<Folder> findByParentFolder(Folder parentFolder);
 }

@@ -72,13 +72,10 @@ public class FolderService {
         folderRepository.delete(folder);
     }
 
-    public List<Folder> getSubFolders(UUID userId, UUID parentFolderId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(UserNotFoundException::new);
-
+    public List<Folder> getSubFolders(UUID parentFolderId) {
         Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
                 .orElseThrow(FolderNotFoundException::new);
 
-        return folderRepository.findByParentFolderAndUser(parentFolder, user);
+        return folderRepository.findByParentFolder(parentFolder);
     }
 }

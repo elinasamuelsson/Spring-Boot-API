@@ -2,6 +2,8 @@ package com.projekt.Spring_Boot_API.controllers;
 
 import com.projekt.Spring_Boot_API.dtos.item.UploadedItemDTO;
 import com.projekt.Spring_Boot_API.models.Item;
+import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
+import com.projekt.Spring_Boot_API.requests.item.UploadItemRequest;
 import com.projekt.Spring_Boot_API.services.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -9,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,16 +21,14 @@ import java.util.UUID;
 public class ItemController {
     private final ItemService itemService;
 
-    @PostMapping("/{userId}/upload")
-    public ResponseEntity<UploadedItemDTO> uploadItem(@PathVariable UUID userId,
-                                                      @RequestParam("file") MultipartFile file,
-                                                      @RequestParam UUID locationId) {
+    @PostMapping("/upload")
+    public ResponseEntity<UploadedItemDTO> uploadItem(@RequestBody UploadItemRequest request) {
         Item item = itemService.uploadItem(
-                file.getName(),
-                file,
-                (int) file.getSize(),
-                locationId,
-                userId
+                request.file().getName(),
+                request.file(),
+                (int) request.file().getSize(),
+                request.locationId(),
+                request.ownerId()
         );
 
         return ResponseEntity
@@ -37,18 +36,17 @@ public class ItemController {
                 .body(UploadedItemDTO.from(item));
     }
 
-    @PutMapping("{userId}/update/{itemId}")
+    @PutMapping("/update/{itemId}")
     public ResponseEntity<?> updateItem(@PathVariable UUID itemId,
-                                        @RequestParam(required = false) String itemName,
-                                        @RequestParam(required = false) UUID itemLocationId) {
-        itemService.updateItem(itemId, itemName, itemLocationId);
+                                        @RequestBody UpdateItemRequest request) {
+        itemService.updateItem(itemId, request.itemName(), request.itemLocationId());
 
         return ResponseEntity
                 .ok()
                 .build();
     }
 
-    @DeleteMapping("{userId}/delete/{itemId}")
+    @DeleteMapping("/delete/{itemId}")
     public ResponseEntity<?> deleteItem(@PathVariable UUID itemId) {
         itemService.deleteItem(itemId);
 
@@ -57,15 +55,14 @@ public class ItemController {
                 .build();
     }
 
-    @GetMapping("{userId}") //TODO: Add DTO response entity to manage what shows up
-    public ResponseEntity<List<Item>> getItemsInFolder(@PathVariable UUID userId,
-                                                       @RequestParam UUID locationId) {
+    @GetMapping("/get-sub/{locationId}")
+    public ResponseEntity<List<Item>> getItemsInFolder(@PathVariable UUID locationId) {
         return ResponseEntity
                 .ok()
-                .body(itemService.getItemsInFolder(userId, locationId));
+                .body(itemService.getItemsInFolder(locationId));
     }
 
-    @GetMapping("{userId}/download/{itemId}")
+    @GetMapping("/download/{itemId}")
     public ResponseEntity<?> downloadItem(@PathVariable UUID itemId) {
         Item item = itemService.downloadItem(itemId);
 

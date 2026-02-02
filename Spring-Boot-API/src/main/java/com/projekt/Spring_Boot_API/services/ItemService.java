@@ -1,6 +1,7 @@
 package com.projekt.Spring_Boot_API.services;
 
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
+import com.projekt.Spring_Boot_API.exceptions.item.ItemNotFoundException;
 import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.Item;
@@ -71,18 +72,15 @@ public class ItemService {
         itemRepository.delete(item);
     }
 
-    public List<Item> getItemsInFolder(UUID userId, UUID folderId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(UserNotFoundException::new);
-
+    public List<Item> getItemsInFolder(UUID folderId) {
         Folder folder = folderRepository.findByFolderId(folderId)
                 .orElseThrow(FolderNameEmptyException::new);
 
-        return itemRepository.findByFolderAndUser(folder, user);
+        return itemRepository.findByFolder(folder);
     }
 
     public Item downloadItem(UUID itemId) {
         return itemRepository.findByItemId(itemId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ItemNotFoundException::new);
     }
 }

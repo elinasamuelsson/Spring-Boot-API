@@ -19,18 +19,18 @@ import java.util.UUID;
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping ("/{userId}/create")
-    public ResponseEntity<CreatedFolderDTO> createFolder(@PathVariable UUID userId,
-                                                         @RequestParam(required = true) UUID parentFolderId,
+    @PostMapping("/create")
+    public ResponseEntity<CreatedFolderDTO> createFolder(@RequestParam UUID ownerId,
+                                                         @RequestParam UUID parentFolderId,
                                                          @RequestBody CreateFolderRequest request) {
-        Folder folder = folderService.createFolder(request.folderName(), parentFolderId, userId);
+        Folder folder = folderService.createFolder(request.folderName(), parentFolderId, ownerId);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(CreatedFolderDTO.from(folder));
     }
 
-    @PutMapping("/{userId}/update/{folderId}")
+    @PutMapping("/update/{folderId}")
     public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
                                           @RequestBody UpdateFolderRequest request) {
         folderService.updateFolder(folderId, request.folderName(), request.parentFolderId());
@@ -38,18 +38,17 @@ public class FolderController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{userId}/delete/{folderId}")
+    @DeleteMapping("/delete/{folderId}")
     public ResponseEntity<?> deleteFolder(@PathVariable UUID folderId) {
         folderService.deleteFolder(folderId);
 
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{userId}") //TODO: Add DTO response entity to manage what shows up
-    public ResponseEntity<List<Folder>> getSubFolders(@PathVariable UUID userId,
-                                                      @RequestParam UUID parentFolderId) {
+    @GetMapping("/get-sub/{parentFolderId}")
+    public ResponseEntity<List<Folder>> getSubFolders(@PathVariable UUID parentFolderId) {
         return ResponseEntity
                 .ok()
-                .body(folderService.getSubFolders(userId, parentFolderId));
+                .body(folderService.getSubFolders(parentFolderId));
     }
 }

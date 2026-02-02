@@ -29,7 +29,8 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable UUID userId, @RequestBody UpdateUserRequest request) {
+    public ResponseEntity<?> updateUser(@PathVariable UUID userId,
+                                        @RequestBody UpdateUserRequest request) {
         userService.updateUser(userId, request.username(), request.password());
 
         return ResponseEntity.ok().build();
@@ -42,14 +43,14 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/all") //TODO: Add DTO response entity to manage what shows up
+    @GetMapping("/get-all")
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.getAllUsers());
     }
 
-    @GetMapping("/{userId}") //TODO: Add DTO response entity to manage what shows up
+    @GetMapping("/get/{userId}")
     public ResponseEntity<User> getUser(@PathVariable UUID userId) {
         return ResponseEntity
                 .status(HttpStatus.OK)
