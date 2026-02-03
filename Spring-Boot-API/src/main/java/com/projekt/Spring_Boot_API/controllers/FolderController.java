@@ -19,11 +19,13 @@ import java.util.UUID;
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping("/create")
-    public ResponseEntity<CreatedFolderDTO> createFolder(@RequestParam UUID ownerId,
-                                                         @RequestParam UUID parentFolderId,
-                                                         @RequestBody CreateFolderRequest request) {
-        Folder folder = folderService.createFolder(request.folderName(), parentFolderId, ownerId);
+    @PostMapping("/create") //TODO: validate that user can only create folders in their own folders
+    public ResponseEntity<CreatedFolderDTO> createFolder(@RequestBody CreateFolderRequest request) {
+        Folder folder = folderService.createFolder(
+                request.folderName(),
+                request.parentFolderId(),
+                request.ownerId()
+        );
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,7 +35,10 @@ public class FolderController {
     @PutMapping("/update/{folderId}")
     public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
                                           @RequestBody UpdateFolderRequest request) {
-        folderService.updateFolder(folderId, request.folderName(), request.parentFolderId());
+        folderService.updateFolder(
+                folderId,
+                request.folderName(),
+                request.parentFolderId());
 
         return ResponseEntity.ok().build();
     }
@@ -45,10 +50,10 @@ public class FolderController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/get-sub/{parentFolderId}")
-    public ResponseEntity<List<Folder>> getSubFolders(@PathVariable UUID parentFolderId) {
+    @GetMapping("/get-sub/{folderId}") //TODO: validate that user can only see their own folders and files
+    public ResponseEntity<List<Folder>> getSubFolders(@PathVariable UUID folderId) {
         return ResponseEntity
                 .ok()
-                .body(folderService.getSubFolders(parentFolderId));
+                .body(folderService.getSubFolders(folderId));
     }
 }

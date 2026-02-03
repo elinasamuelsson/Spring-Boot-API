@@ -5,18 +5,22 @@ import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
 import com.projekt.Spring_Boot_API.exceptions.user.UsernameEmptyException;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IUserRepository;
-import lombok.AllArgsConstructor;
-import org.mindrot.jbcrypt.BCrypt;
+import com.projekt.Spring_Boot_API.requests.user.InvalidCredentialsException;
+import com.projekt.Spring_Boot_API.security.JwtService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
-    private IUserRepository userRepository;
-    private FolderService folderService;
+    private final IUserRepository userRepository;
+    private final FolderService folderService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
     public User registerUser(String username, String password) {
         if (username == null || username.isEmpty()) {
@@ -27,13 +31,32 @@ public class UserService {
             throw new PasswordEmptyException();
         }
 
-        String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+        String passwordHash = passwordEncoder.encode(password);
 
         User user = userRepository.save(new User(username, passwordHash));
 
         folderService.createFolder("root", null, user.getUserId());
 
         return user;
+    }
+
+    public String loginUser(String username, String password) {
+        if (username == null || username.isEmpty()) {
+            throw new UsernameEmptyException();
+        }
+
+        if (password == null || password.isEmpty()) {
+            throw new PasswordEmptyException();
+        }
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            throw new InvalidCredentialsException();
+        }
+
+        return jwtService.generateToken(user.getUserId());
     }
 
     public void updateUser(UUID userId, String username, String password) {
@@ -45,7 +68,7 @@ public class UserService {
         }
 
         if (password != null && !password.isBlank()) {
-            String passwordHash = BCrypt.hashpw(password, BCrypt.gensalt());
+            String passwordHash = passwordEncoder.encode(password);
             user.setPasswordHash(passwordHash);
         }
         userRepository.save(user);

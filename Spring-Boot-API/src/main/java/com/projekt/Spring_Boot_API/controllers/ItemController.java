@@ -21,7 +21,7 @@ import java.util.UUID;
 public class ItemController {
     private final ItemService itemService;
 
-    @PostMapping("/upload")
+    @PostMapping("/upload")//TODO: validate that user can only upload to their own folders
     public ResponseEntity<UploadedItemDTO> uploadItem(@RequestBody UploadItemRequest request) {
         Item item = itemService.uploadItem(
                 request.file().getName(),
@@ -55,7 +55,7 @@ public class ItemController {
                 .build();
     }
 
-    @GetMapping("/get-sub/{locationId}")
+    @GetMapping("/get-sub/{locationId}") //TODO: validate that user can only see their own folders and files
     public ResponseEntity<List<Item>> getItemsInFolder(@PathVariable UUID locationId) {
         return ResponseEntity
                 .ok()

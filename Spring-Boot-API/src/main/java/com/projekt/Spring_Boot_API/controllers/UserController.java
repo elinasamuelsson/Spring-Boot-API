@@ -1,7 +1,9 @@
 package com.projekt.Spring_Boot_API.controllers;
 
+import com.projekt.Spring_Boot_API.dtos.user.LoggedInUserDTO;
 import com.projekt.Spring_Boot_API.dtos.user.RegisteredUserDTO;
 import com.projekt.Spring_Boot_API.models.User;
+import com.projekt.Spring_Boot_API.requests.user.LoginUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.RegisterUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.UpdateUserRequest;
 import com.projekt.Spring_Boot_API.services.UserService;
@@ -26,6 +28,15 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(RegisteredUserDTO.from(user));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoggedInUserDTO> loginUser(@RequestBody LoginUserRequest request) {
+        String token = userService.loginUser(request.username(),request.password());
+
+        return ResponseEntity
+                .ok()
+                .body(new LoggedInUserDTO(request.username(), token));
     }
 
     @PutMapping("/update/{userId}")
