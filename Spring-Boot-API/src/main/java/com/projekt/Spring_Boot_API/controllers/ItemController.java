@@ -21,14 +21,13 @@ import java.util.UUID;
 public class ItemController {
     private final ItemService itemService;
 
-    @PostMapping("/upload")//TODO: validate that user can only upload to their own folders
-    public ResponseEntity<UploadedItemDTO> uploadItem(@RequestBody UploadItemRequest request) {
+    @PostMapping("/upload")
+    public ResponseEntity<UploadedItemDTO> uploadItem(@ModelAttribute UploadItemRequest request) {
         Item item = itemService.uploadItem(
                 request.file().getName(),
                 request.file(),
                 (int) request.file().getSize(),
-                request.locationId(),
-                request.ownerId()
+                request.locationId()
         );
 
         return ResponseEntity
@@ -53,13 +52,6 @@ public class ItemController {
         return ResponseEntity
                 .ok()
                 .build();
-    }
-
-    @GetMapping("/get-sub/{locationId}") //TODO: validate that user can only see their own folders and files
-    public ResponseEntity<List<Item>> getItemsInFolder(@PathVariable UUID locationId) {
-        return ResponseEntity
-                .ok()
-                .body(itemService.getItemsInFolder(locationId));
     }
 
     @GetMapping("/download/{itemId}")

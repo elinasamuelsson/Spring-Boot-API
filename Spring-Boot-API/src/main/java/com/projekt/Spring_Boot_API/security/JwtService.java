@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Service
 public class JwtService {
-    private static final Algorithm ALGORITHM = Algorithm.HMAC256("secret");
+    private static final Algorithm ALGORITHM = Algorithm.HMAC256(System.getenv("JWT_SECRET"));
     private static final JWTVerifier verifier = JWT
             .require(ALGORITHM)
             .withIssuer("Spring-Boot-API")
@@ -22,7 +22,7 @@ public class JwtService {
         return JWT.create()
                 .withIssuer("Spring-Boot-API")
                 .withIssuedAt(Instant.now())
-                .withExpiresAt(Instant.now().plus(30, ChronoUnit.MINUTES))
+                .withExpiresAt(Instant.now().plus(60, ChronoUnit.MINUTES))
                 .withSubject(userId.toString())
                 .sign(ALGORITHM);
     }

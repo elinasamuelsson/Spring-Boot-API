@@ -1,13 +1,14 @@
 package com.projekt.Spring_Boot_API.services;
 
-import com.projekt.Spring_Boot_API.exceptions.user.PasswordEmptyException;
-import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
-import com.projekt.Spring_Boot_API.exceptions.user.UsernameEmptyException;
+import com.projekt.Spring_Boot_API.exceptions.user.*;
+import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.User;
+import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
 import com.projekt.Spring_Boot_API.repositories.IUserRepository;
-import com.projekt.Spring_Boot_API.requests.user.InvalidCredentialsException;
 import com.projekt.Spring_Boot_API.security.JwtService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +19,11 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final IUserRepository userRepository;
-    private final FolderService folderService;
+    private final IFolderRepository folderRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public User registerUser(String username, String password) {
         if (username == null || username.isEmpty()) {
             throw new UsernameEmptyException();
@@ -35,7 +37,7 @@ public class UserService {
 
         User user = userRepository.save(new User(username, passwordHash));
 
-        folderService.createFolder("root", null, user.getUserId());
+        folderRepository.save(new Folder("root", null, user));
 
         return user;
     }
@@ -63,6 +65,12 @@ public class UserService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(UserNotFoundException::new);
 
+        User authenticatedUser = authenticateUser();
+
+        if (!user.getUserId().equals(authenticatedUser.getUserId())) {
+            throw new UnauthorizedUserActionException();
+        }
+
         if (username != null && !username.isBlank()) {
             user.setUsername(username);
         }
@@ -78,6 +86,12 @@ public class UserService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(UserNotFoundException::new);
 
+        User authenticatedUser = authenticateUser();
+
+        if (!user.getUserId().equals(authenticatedUser.getUserId())) {
+            throw new UnauthorizedUserActionException();
+        }
+
         userRepository.delete(user);
     }
 
@@ -88,5 +102,12 @@ public class UserService {
     public User getUserById(UUID uuid) {
         return userRepository.findByUserId(uuid)
                 .orElseThrow(UserNotFoundException::new);
+    }
+
+    private User authenticateUser() {
+        return (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
     }
 }

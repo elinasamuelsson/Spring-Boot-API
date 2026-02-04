@@ -24,6 +24,7 @@ public class SecurityConfig {
                     auth
                             .requestMatchers("/api/users/register").permitAll()
                             .requestMatchers("/api/users/login").permitAll()
+                            .requestMatchers("/api/users/get-all").permitAll() //TODO: remove before finalizing
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(

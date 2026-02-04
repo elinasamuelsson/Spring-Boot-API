@@ -1,6 +1,7 @@
 package com.projekt.Spring_Boot_API.controllers;
 
 import com.projekt.Spring_Boot_API.dtos.folder.CreatedFolderDTO;
+import com.projekt.Spring_Boot_API.dtos.folder.FolderContentsDTO;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
 import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
@@ -19,12 +20,11 @@ import java.util.UUID;
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping("/create") //TODO: validate that user can only create folders in their own folders
+    @PostMapping("/create")
     public ResponseEntity<CreatedFolderDTO> createFolder(@RequestBody CreateFolderRequest request) {
         Folder folder = folderService.createFolder(
                 request.folderName(),
-                request.parentFolderId(),
-                request.ownerId()
+                request.parentFolderId()
         );
 
         return ResponseEntity
@@ -38,7 +38,8 @@ public class FolderController {
         folderService.updateFolder(
                 folderId,
                 request.folderName(),
-                request.parentFolderId());
+                request.parentFolderId()
+        );
 
         return ResponseEntity.ok().build();
     }
@@ -50,10 +51,13 @@ public class FolderController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/get-sub/{folderId}") //TODO: validate that user can only see their own folders and files
-    public ResponseEntity<List<Folder>> getSubFolders(@PathVariable UUID folderId) {
+    @GetMapping("/get-contents/{folderId}")
+    public ResponseEntity<FolderContentsDTO> getContents(@PathVariable UUID folderId) {
+
+        FolderContentsDTO dto = folderService.getContents(folderId);
+
         return ResponseEntity
                 .ok()
-                .body(folderService.getSubFolders(folderId));
+                .body(dto);
     }
 }

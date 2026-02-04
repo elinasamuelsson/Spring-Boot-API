@@ -31,27 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        System.out.println("=== JWT Filter Debug ===");
-        System.out.println("Request URI: " + request.getRequestURI());
-
         String header = request.getHeader("Authorization");
-        System.out.println("Auth Header: " + header);
 
         if (header == null || header.isBlank() || !header.startsWith("Bearer ")) {
-            System.out.println("No valid Bearer token, continuing filter chain");
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = header.substring("Bearer ".length());
-        System.out.println("Token extracted: " + token.substring(0, Math.min(20, token.length())) + "...");
 
         UUID userId;
         try {
             userId = jwtService.validateToken(token);
-            System.out.println("Token validated, userId: " + userId);
         } catch (JWTVerificationException e) {
-            System.out.println("Token validation failed: " + e.getMessage());
             response.setStatus(401);
             return;
         }
@@ -59,14 +51,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Optional<User> optionalUser = userRepository.findByUserId(userId);
 
         if (optionalUser.isEmpty()) {
-            System.out.println("User not found for userId: " + userId);
             response.setStatus(401);
             return;
         }
 
         User user = optionalUser.get();
-        System.out.println("User found: " + user.getUsername());
-        System.out.println("Authorities: " + user.getAuthorities());
 
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                 user,
@@ -75,9 +64,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         );
 
         SecurityContextHolder.getContext().setAuthentication(authToken);
-        System.out.println("Authentication set in SecurityContext");
-        System.out.println("Is Authenticated: " + authToken.isAuthenticated());
-        System.out.println("=== End JWT Filter Debug ===");
 
         filterChain.doFilter(request, response);
     }

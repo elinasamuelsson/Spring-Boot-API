@@ -9,4 +9,8 @@ public record FolderContentsDTO(
         List<Folder> subFolders,
         List<Item> items
 ) {
+    public FolderContentsDTO(List<Folder> subFolders, List<Item> items) {
+        this.subFolders = subFolders;
+        this.items = items;
+    }
 }

@@ -5,7 +5,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.UUID;
 
 public record UploadItemRequest(
-        UUID ownerId,
         UUID locationId,
         MultipartFile file
 ) {
