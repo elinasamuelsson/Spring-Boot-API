@@ -1,7 +1,7 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.dtos.folder.CreatedFolderDTO;
-import com.projekt.Spring_Boot_API.dtos.folder.FolderContentsDTO;
+import com.projekt.Spring_Boot_API.responses.folder.CreatedFolderDTO;
+import com.projekt.Spring_Boot_API.responses.folder.FolderContentsDTO;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
 import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController

@@ -1,6 +1,4 @@
-package com.projekt.Spring_Boot_API.dtos.user;
-
-import com.projekt.Spring_Boot_API.models.User;
+package com.projekt.Spring_Boot_API.responses.user;
 
 public record LoggedInUserDTO(
         String username,

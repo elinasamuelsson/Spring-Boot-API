@@ -1,4 +1,4 @@
-package com.projekt.Spring_Boot_API.dtos.item;
+package com.projekt.Spring_Boot_API.responses.item;
 
 import com.projekt.Spring_Boot_API.models.Item;
 

@@ -1,6 +1,6 @@
 package com.projekt.Spring_Boot_API.services;
 
-import com.projekt.Spring_Boot_API.dtos.folder.FolderContentsDTO;
+import com.projekt.Spring_Boot_API.responses.folder.FolderContentsDTO;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNotFoundException;
 import com.projekt.Spring_Boot_API.exceptions.folder.OwnerFolderMismatchException;

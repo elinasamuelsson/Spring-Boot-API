@@ -1,7 +1,7 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.dtos.user.LoggedInUserDTO;
-import com.projekt.Spring_Boot_API.dtos.user.RegisteredUserDTO;
+import com.projekt.Spring_Boot_API.responses.user.LoggedInUserDTO;
+import com.projekt.Spring_Boot_API.responses.user.RegisteredUserDTO;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.requests.user.LoginUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.RegisterUserRequest;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")

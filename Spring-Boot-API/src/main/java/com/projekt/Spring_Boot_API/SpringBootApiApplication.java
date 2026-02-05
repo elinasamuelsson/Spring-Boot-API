@@ -12,10 +12,8 @@ public class SpringBootApiApplication {
 
 	// TODO: DTOs to better manage what response is sent for GETs
 	// TODO: return authenticatedUser in get-self again when there is a DTO to manage the response
-	// TODO: uploaded files don't get name from file.getName() any more, troubleshoot
-    // TODO: comments following Javadoc standards in all services
-	// TODO: yellow lines in authenticate help methods in ItemService and FolderService
-	// TODO: better exception logging in uploadItem in ItemService
-	// TODO: Search function for files?
+	// TODO: yellow lines in authenticate help methods in ItemService, FolderService and UserService
+	// TODO: better exception logging in ItemService
+	// TODO: comments following Javadoc standards in all services
 
 }

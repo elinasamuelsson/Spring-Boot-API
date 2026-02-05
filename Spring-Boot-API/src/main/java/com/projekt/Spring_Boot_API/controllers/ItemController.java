@@ -1,6 +1,6 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.dtos.item.UploadedItemDTO;
+import com.projekt.Spring_Boot_API.responses.item.UploadedItemDTO;
 import com.projekt.Spring_Boot_API.models.Item;
 import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
 import com.projekt.Spring_Boot_API.requests.item.UploadItemRequest;

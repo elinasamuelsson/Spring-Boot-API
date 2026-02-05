@@ -1,4 +1,4 @@
-package com.projekt.Spring_Boot_API.dtos.folder;
+package com.projekt.Spring_Boot_API.responses.folder;
 
 import com.projekt.Spring_Boot_API.models.Folder;
 
