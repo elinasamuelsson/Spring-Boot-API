@@ -2,6 +2,7 @@ package com.projekt.Spring_Boot_API.services;
 
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
 import com.projekt.Spring_Boot_API.exceptions.folder.OwnerFolderMismatchException;
+import com.projekt.Spring_Boot_API.exceptions.item.FileUploadFailException;
 import com.projekt.Spring_Boot_API.exceptions.item.ItemNotFoundException;
 import com.projekt.Spring_Boot_API.exceptions.item.OwnerItemMismatchException;
 import com.projekt.Spring_Boot_API.models.Folder;
@@ -31,12 +32,7 @@ public class ItemService {
         try {
             fileBytes = file.getBytes();
         } catch (IOException e) {
-            System.out.println("Could not read file.");
-            e.printStackTrace();
-        }
-
-        if (fileBytes == null) {
-            throw new RuntimeException("File has no contents.");
+            throw new FileUploadFailException();
         }
 
         User owner = authenticateUser();
@@ -60,7 +56,7 @@ public class ItemService {
 
     public void updateItem(UUID itemId, UpdateItemRequest request) {
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ItemNotFoundException::new);
 
         User user = authenticateUser();
 
@@ -84,7 +80,7 @@ public class ItemService {
 
     public void deleteItem(UUID itemId) {
         Item item = itemRepository.findByItemId(itemId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(ItemNotFoundException::new);
 
         User user = authenticateUser();
 
