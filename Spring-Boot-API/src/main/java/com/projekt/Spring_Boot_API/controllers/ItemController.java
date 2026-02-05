@@ -11,8 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -22,13 +22,9 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("/upload")
-    public ResponseEntity<UploadedItemDTO> uploadItem(@ModelAttribute UploadItemRequest request) {
-        Item item = itemService.uploadItem(
-                request.file().getName(),
-                request.file(),
-                (int) request.file().getSize(),
-                request.locationId()
-        );
+    public ResponseEntity<UploadedItemDTO> uploadItem(@ModelAttribute UploadItemRequest request,
+                                                      @RequestParam("file") MultipartFile file) {
+        Item item = itemService.uploadItem(request.locationId(), file);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -38,7 +34,7 @@ public class ItemController {
     @PutMapping("/update/{itemId}")
     public ResponseEntity<?> updateItem(@PathVariable UUID itemId,
                                         @RequestBody UpdateItemRequest request) {
-        itemService.updateItem(itemId, request.itemName(), request.itemLocationId());
+        itemService.updateItem(itemId, request);
 
         return ResponseEntity
                 .ok()

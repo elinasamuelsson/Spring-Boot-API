@@ -1,7 +1,6 @@
 package com.projekt.Spring_Boot_API.security;
 
 import com.projekt.Spring_Boot_API.repositories.IUserRepository;
-import com.projekt.Spring_Boot_API.services.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +23,6 @@ public class SecurityConfig {
                     auth
                             .requestMatchers("/api/users/register").permitAll()
                             .requestMatchers("/api/users/login").permitAll()
-                            .requestMatchers("/api/users/get-all").permitAll() //TODO: remove before finalizing
                             .anyRequest().authenticated();
                 })
                 .addFilterBefore(

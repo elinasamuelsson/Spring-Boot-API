@@ -22,10 +22,7 @@ public class FolderController {
 
     @PostMapping("/create")
     public ResponseEntity<CreatedFolderDTO> createFolder(@RequestBody CreateFolderRequest request) {
-        Folder folder = folderService.createFolder(
-                request.folderName(),
-                request.parentFolderId()
-        );
+        Folder folder = folderService.createFolder(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -36,10 +33,7 @@ public class FolderController {
     public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
                                           @RequestBody UpdateFolderRequest request) {
         folderService.updateFolder(
-                folderId,
-                request.folderName(),
-                request.parentFolderId()
-        );
+                folderId, request);
 
         return ResponseEntity.ok().build();
     }

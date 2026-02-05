@@ -9,6 +9,8 @@ import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
 import com.projekt.Spring_Boot_API.repositories.IItemRepository;
+import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
+import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -21,23 +23,23 @@ public class FolderService {
     private final IFolderRepository folderRepository;
     private final IItemRepository itemRepository;
 
-    public Folder createFolder(String folderName, UUID parentFolderId) {
-        Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
+    public Folder createFolder(CreateFolderRequest request) {
+        Folder parentFolder = folderRepository.findByFolderId(request.parentFolderId())
                 .orElseThrow(FolderNotFoundException::new);
 
         User user = authenticateUser();
         checkFolderOwnership(user, parentFolder);
 
-        if (folderName == null || folderName.isBlank()) {
+        if (request.folderName() == null || request.folderName().isBlank()) {
             throw new FolderNameEmptyException();
         }
 
-        Folder folder = new Folder(folderName, parentFolder, user);
+        Folder folder = new Folder(request.folderName(), parentFolder, user);
 
         return folderRepository.save(folder);
     }
 
-    public void updateFolder(UUID folderId, String folderName, UUID parentFolderId) {
+    public void updateFolder(UUID folderId, UpdateFolderRequest request) {
         Folder folder = folderRepository.findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
 
@@ -49,15 +51,15 @@ public class FolderService {
 
         checkFolderOwnership(user, folder);
 
-        if (parentFolderId != null) {
-            Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
+        if (request.parentFolderId() != null) {
+            Folder parentFolder = folderRepository.findByFolderId(request.parentFolderId())
                     .orElseThrow(FolderNotFoundException::new);
             checkFolderOwnership(user, parentFolder);
             folder.setParentFolder(parentFolder);
         }
 
-        if (folderName != null && !folderName.isBlank()) {
-            folder.setFolderName(folderName);
+        if (request.folderName() != null && !request.folderName().isBlank()) {
+            folder.setFolderName(request.folderName());
         }
 
         folderRepository.save(folder);

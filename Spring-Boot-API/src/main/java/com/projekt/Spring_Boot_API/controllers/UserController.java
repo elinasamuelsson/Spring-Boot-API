@@ -23,7 +23,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisteredUserDTO> registerUser(@RequestBody RegisterUserRequest request) {
-        User user = userService.registerUser(request.username(), request.password());
+        User user = userService.registerUser(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -32,7 +32,7 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoggedInUserDTO> loginUser(@RequestBody LoginUserRequest request) {
-        String token = userService.loginUser(request.username(), request.password());
+        String token = userService.loginUser(request);
 
         return ResponseEntity
                 .ok()
@@ -41,7 +41,7 @@ public class UserController {
 
     @PutMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequest request) {
-        userService.updateUser(request.username(), request.password());
+        userService.updateUser(request);
 
         return ResponseEntity.ok().build();
     }
@@ -60,10 +60,10 @@ public class UserController {
                 .body(userService.getAllUsers());
     }
 
-    @GetMapping("/get/{userId}")
-    public ResponseEntity<User> getUser(@PathVariable UUID userId) {
+    @GetMapping("/get-self")
+    public ResponseEntity<User> getOwnUserData() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userService.getUserById(userId));
+                .body(userService.getOwnUserData());
     }
 }

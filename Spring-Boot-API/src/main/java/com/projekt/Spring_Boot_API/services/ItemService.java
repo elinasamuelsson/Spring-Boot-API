@@ -4,13 +4,13 @@ import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
 import com.projekt.Spring_Boot_API.exceptions.folder.OwnerFolderMismatchException;
 import com.projekt.Spring_Boot_API.exceptions.item.ItemNotFoundException;
 import com.projekt.Spring_Boot_API.exceptions.item.OwnerItemMismatchException;
-import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.Item;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
 import com.projekt.Spring_Boot_API.repositories.IItemRepository;
-import com.projekt.Spring_Boot_API.repositories.IUserRepository;
+import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
+import com.projekt.Spring_Boot_API.requests.item.UploadItemRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,10 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ItemService {
-    private final IUserRepository userRepository;
     private final IFolderRepository folderRepository;
     private final IItemRepository itemRepository;
 
-    public Item uploadItem(String name, MultipartFile file, int size, UUID folderId) {
+    public Item uploadItem(UUID locationId, MultipartFile file) {
         byte[] fileBytes = null;
         try {
             fileBytes = file.getBytes();
@@ -41,17 +40,22 @@ public class ItemService {
 
         User owner = authenticateUser();
 
-        Folder location = folderRepository.findByFolderId(folderId)
+        Folder location = folderRepository.findByFolderId(locationId)
                 .orElseThrow(FolderNameEmptyException::new);
 
         checkFolderOwnership(owner, location);
 
-        Item item = new Item(name, fileBytes, size, location, owner);
+        Item item = new Item(
+                file.getOriginalFilename(),
+                fileBytes,
+                (int) file.getSize(),
+                location,
+                owner);
 
         return itemRepository.save(item);
     }
 
-    public void updateItem(UUID itemId, String itemName, UUID itemLocationId) {
+    public void updateItem(UUID itemId, UpdateItemRequest request) {
         Item item = itemRepository.findByItemId(itemId)
                 .orElseThrow(RuntimeException::new);
 
@@ -59,8 +63,8 @@ public class ItemService {
 
         checkItemOwnership(user, item);
 
-        if (itemLocationId != null) {
-            Folder folder = folderRepository.findByFolderId(itemLocationId)
+        if (request.itemLocationId() != null) {
+            Folder folder = folderRepository.findByFolderId(request.itemLocationId())
                     .orElseThrow(FolderNameEmptyException::new);
 
             checkFolderOwnership(user, folder);
@@ -68,8 +72,8 @@ public class ItemService {
             item.setFolder(folder);
         }
 
-        if (itemName != null && !itemName.isBlank()) {
-            item.setItemName(itemName);
+        if (request.itemName() != null && !request.itemName().isBlank()) {
+            item.setItemName(request.itemName());
         }
 
         itemRepository.save(item);
