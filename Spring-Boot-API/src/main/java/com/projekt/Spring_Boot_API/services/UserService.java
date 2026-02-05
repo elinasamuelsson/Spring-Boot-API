@@ -61,38 +61,24 @@ public class UserService {
         return jwtService.generateToken(user.getUserId());
     }
 
-    public void updateUser(UUID userId, String username, String password) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(UserNotFoundException::new);
-
+    public void updateUser(String username, String password) {
         User authenticatedUser = authenticateUser();
 
-        if (!user.getUserId().equals(authenticatedUser.getUserId())) {
-            throw new UnauthorizedUserActionException();
-        }
-
         if (username != null && !username.isBlank()) {
-            user.setUsername(username);
+            authenticatedUser.setUsername(username);
         }
 
         if (password != null && !password.isBlank()) {
             String passwordHash = passwordEncoder.encode(password);
-            user.setPasswordHash(passwordHash);
+            authenticatedUser.setPasswordHash(passwordHash);
         }
-        userRepository.save(user);
+        userRepository.save(authenticatedUser);
     }
 
-    public void deleteUser(UUID userId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(UserNotFoundException::new);
-
+    public void deleteUser() {
         User authenticatedUser = authenticateUser();
 
-        if (!user.getUserId().equals(authenticatedUser.getUserId())) {
-            throw new UnauthorizedUserActionException();
-        }
-
-        userRepository.delete(user);
+        userRepository.delete(authenticatedUser);
     }
 
     public List<User> getAllUsers() {

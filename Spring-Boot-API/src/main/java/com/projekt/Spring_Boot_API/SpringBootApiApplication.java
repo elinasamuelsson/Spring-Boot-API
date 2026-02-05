@@ -10,9 +10,9 @@ public class SpringBootApiApplication {
 		SpringApplication.run(SpringBootApiApplication.class, args);
 	}
 
-	// TODO: UserController may not need to ask userId in request as logged in user can be fetched from authenticateUser
-	// TODO: UserService needs authentication (who can use GETs on users? Should they exist at all?)
+	// TODO: UserService needs authentication (who can use GETs on users? Should they exist at all? Get own data instead of getById?)
 	// TODO: look into simply passing request straight into services to minimize arguments
+    // TODO: comments following Javadoc standards in all services
 	// TODO: yellow lines in authenticate help methods in ItemService and FolderService
 	// TODO: better exception logging in uploadItem in ItemService
 	// TODO: DTOs to better manage what response is sent for GETs

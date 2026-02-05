@@ -32,24 +32,23 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<LoggedInUserDTO> loginUser(@RequestBody LoginUserRequest request) {
-        String token = userService.loginUser(request.username(),request.password());
+        String token = userService.loginUser(request.username(), request.password());
 
         return ResponseEntity
                 .ok()
                 .body(new LoggedInUserDTO(request.username(), token));
     }
 
-    @PutMapping("/update/{userId}")
-    public ResponseEntity<?> updateUser(@PathVariable UUID userId,
-                                        @RequestBody UpdateUserRequest request) {
-        userService.updateUser(userId, request.username(), request.password());
+    @PutMapping("/update")
+    public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequest request) {
+        userService.updateUser(request.username(), request.password());
 
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
-        userService.deleteUser(userId);
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser() {
+        userService.deleteUser();
 
         return ResponseEntity.ok().build();
     }
