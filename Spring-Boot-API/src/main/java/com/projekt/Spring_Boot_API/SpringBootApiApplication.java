@@ -10,10 +10,9 @@ public class SpringBootApiApplication {
 		SpringApplication.run(SpringBootApiApplication.class, args);
 	}
 
-	// TODO: DTOs to better manage what response is sent for GETs
-	// TODO: return authenticatedUser in get-self again when there is a DTO to manage the response
 	// TODO: yellow lines in authenticate help methods in ItemService, FolderService and UserService
 	// TODO: better exception logging in ItemService
+	// TODO: clean code check, uniformity check etc.
 	// TODO: comments following Javadoc standards in all services
 
 }

@@ -11,6 +11,7 @@ import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
 import com.projekt.Spring_Boot_API.repositories.IItemRepository;
 import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
 import com.projekt.Spring_Boot_API.requests.item.UploadItemRequest;
+import com.projekt.Spring_Boot_API.responses.item.UploadedItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class ItemService {
     private final IFolderRepository folderRepository;
     private final IItemRepository itemRepository;
 
-    public Item uploadItem(UUID locationId, MultipartFile file) {
+    public UploadedItemResponse uploadItem(UUID locationId, MultipartFile file) {
         byte[] fileBytes = null;
         try {
             fileBytes = file.getBytes();
@@ -52,7 +53,9 @@ public class ItemService {
                 location,
                 owner);
 
-        return itemRepository.save(item);
+        return UploadedItemResponse.from(
+                itemRepository.save(item)
+        );
     }
 
     public void updateItem(UUID itemId, UpdateItemRequest request) {

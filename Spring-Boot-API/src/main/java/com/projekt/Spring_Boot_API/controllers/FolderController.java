@@ -1,7 +1,7 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.responses.folder.CreatedFolderDTO;
-import com.projekt.Spring_Boot_API.responses.folder.FolderContentsDTO;
+import com.projekt.Spring_Boot_API.responses.folder.CreatedFolderResponse;
+import com.projekt.Spring_Boot_API.responses.folder.FolderContentsResponse;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
 import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
@@ -20,12 +20,12 @@ public class FolderController {
     private final FolderService folderService;
 
     @PostMapping("/create")
-    public ResponseEntity<CreatedFolderDTO> createFolder(@RequestBody CreateFolderRequest request) {
+    public ResponseEntity<CreatedFolderResponse> createFolder(@RequestBody CreateFolderRequest request) {
         Folder folder = folderService.createFolder(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(CreatedFolderDTO.from(folder));
+                .body(CreatedFolderResponse.from(folder));
     }
 
     @PutMapping("/update/{folderId}")
@@ -45,9 +45,9 @@ public class FolderController {
     }
 
     @GetMapping("/get-contents/{folderId}")
-    public ResponseEntity<FolderContentsDTO> getContents(@PathVariable UUID folderId) {
+    public ResponseEntity<FolderContentsResponse> getContents(@PathVariable UUID folderId) {
 
-        FolderContentsDTO dto = folderService.getContents(folderId);
+        FolderContentsResponse dto = folderService.getContents(folderId);
 
         return ResponseEntity
                 .ok()

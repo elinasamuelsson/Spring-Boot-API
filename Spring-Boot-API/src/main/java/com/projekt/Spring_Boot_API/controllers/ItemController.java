@@ -1,6 +1,6 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.responses.item.UploadedItemDTO;
+import com.projekt.Spring_Boot_API.responses.item.UploadedItemResponse;
 import com.projekt.Spring_Boot_API.models.Item;
 import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
 import com.projekt.Spring_Boot_API.requests.item.UploadItemRequest;
@@ -22,13 +22,13 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("/upload")
-    public ResponseEntity<UploadedItemDTO> uploadItem(@ModelAttribute UploadItemRequest request,
-                                                      @RequestParam("file") MultipartFile file) {
-        Item item = itemService.uploadItem(request.locationId(), file);
+    public ResponseEntity<UploadedItemResponse> uploadItem(@ModelAttribute UploadItemRequest request,
+                                                           @RequestParam("file") MultipartFile file) {
+        UploadedItemResponse response = itemService.uploadItem(request.locationId(), file);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(UploadedItemDTO.from(item));
+                .body(response);
     }
 
     @PutMapping("/update/{itemId}")
@@ -51,7 +51,7 @@ public class ItemController {
     }
 
     @GetMapping("/download/{itemId}")
-    public ResponseEntity<?> downloadItem(@PathVariable UUID itemId) {
+    public ResponseEntity<byte[]> downloadItem(@PathVariable UUID itemId) {
         Item item = itemService.downloadItem(itemId);
 
         HttpHeaders headers = new HttpHeaders();

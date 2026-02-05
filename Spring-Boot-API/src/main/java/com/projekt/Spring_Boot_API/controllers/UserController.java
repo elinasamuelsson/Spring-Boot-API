@@ -1,7 +1,9 @@
 package com.projekt.Spring_Boot_API.controllers;
 
-import com.projekt.Spring_Boot_API.responses.user.LoggedInUserDTO;
-import com.projekt.Spring_Boot_API.responses.user.RegisteredUserDTO;
+import com.projekt.Spring_Boot_API.responses.user.AllUsersDataResponse;
+import com.projekt.Spring_Boot_API.responses.user.SingleUserDataResponse;
+import com.projekt.Spring_Boot_API.responses.user.LoggedInUserResponse;
+import com.projekt.Spring_Boot_API.responses.user.RegisteredUserResponse;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.requests.user.LoginUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.RegisterUserRequest;
@@ -21,21 +23,21 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public ResponseEntity<RegisteredUserDTO> registerUser(@RequestBody RegisterUserRequest request) {
-        User user = userService.registerUser(request);
+    public ResponseEntity<RegisteredUserResponse> registerUser(@RequestBody RegisterUserRequest request) {
+        RegisteredUserResponse response = userService.registerUser(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(RegisteredUserDTO.from(user));
+                .body(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoggedInUserDTO> loginUser(@RequestBody LoginUserRequest request) {
-        String token = userService.loginUser(request);
+    public ResponseEntity<LoggedInUserResponse> loginUser(@RequestBody LoginUserRequest request) {
+        LoggedInUserResponse response = userService.loginUser(request);
 
         return ResponseEntity
                 .ok()
-                .body(new LoggedInUserDTO(request.username(), token));
+                .body(response);
     }
 
     @PutMapping("/update")
@@ -53,16 +55,20 @@ public class UserController {
     }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<AllUsersDataResponse> getAllUsers() {
+        AllUsersDataResponse response = userService.getAllUsers();
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(userService.getAllUsers());
+                .body(response);
     }
 
     @GetMapping("/get-self")
-    public ResponseEntity<User> getOwnUserData() {
+    public ResponseEntity<SingleUserDataResponse> getOwnUserData() {
+        SingleUserDataResponse response = userService.getOwnUserData();
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(userService.getOwnUserData());
+                .ok()
+                .body(response);
     }
 }

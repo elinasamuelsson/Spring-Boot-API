@@ -1,6 +1,6 @@
 package com.projekt.Spring_Boot_API.services;
 
-import com.projekt.Spring_Boot_API.responses.folder.FolderContentsDTO;
+import com.projekt.Spring_Boot_API.responses.folder.FolderContentsResponse;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNotFoundException;
 import com.projekt.Spring_Boot_API.exceptions.folder.OwnerFolderMismatchException;
@@ -78,15 +78,15 @@ public class FolderService {
         folderRepository.delete(folder);
     }
 
-    public FolderContentsDTO getContents(UUID parentFolderId) {
+    public FolderContentsResponse getContents(UUID parentFolderId) {
         Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
                 .orElseThrow(FolderNotFoundException::new);
 
         checkFolderOwnership(authenticateUser(), parentFolder);
 
-        return new FolderContentsDTO(
-                folderRepository.findByParentFolder(parentFolder),
-                itemRepository.findByFolder(parentFolder)
+        return FolderContentsResponse.from(
+                parentFolder.getSubFolders(),
+                parentFolder.getItems()
         );
     }
 

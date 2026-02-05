@@ -8,6 +8,10 @@ import com.projekt.Spring_Boot_API.repositories.IUserRepository;
 import com.projekt.Spring_Boot_API.requests.user.LoginUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.RegisterUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.UpdateUserRequest;
+import com.projekt.Spring_Boot_API.responses.user.AllUsersDataResponse;
+import com.projekt.Spring_Boot_API.responses.user.LoggedInUserResponse;
+import com.projekt.Spring_Boot_API.responses.user.RegisteredUserResponse;
+import com.projekt.Spring_Boot_API.responses.user.SingleUserDataResponse;
 import com.projekt.Spring_Boot_API.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -27,7 +33,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User registerUser(RegisterUserRequest request) {
+    public RegisteredUserResponse registerUser(RegisterUserRequest request) {
         if (request.username() == null ||
                 request.username().isEmpty()) {
             throw new UsernameEmptyException();
@@ -47,10 +53,10 @@ public class UserService {
 
         folderRepository.save(new Folder("root", null, user));
 
-        return user;
+        return RegisteredUserResponse.from(user);
     }
 
-    public String loginUser(LoginUserRequest request) {
+    public LoggedInUserResponse loginUser(LoginUserRequest request) {
         if (request.username() == null ||
                 request.username().isEmpty()) {
             throw new UsernameEmptyException();
@@ -70,7 +76,14 @@ public class UserService {
             throw new InvalidCredentialsException();
         }
 
-        return jwtService.generateToken(user.getUserId());
+        String token = jwtService.generateToken(user.getUserId());
+
+        return LoggedInUserResponse.from(
+                new HashMap<>(Map.of(
+                        "username", user.getUsername(),
+                        "token", token
+                ))
+        );
     }
 
     public void updateUser(UpdateUserRequest request) {
@@ -94,13 +107,12 @@ public class UserService {
         userRepository.delete(authenticatedUser);
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public AllUsersDataResponse getAllUsers() {
+        return AllUsersDataResponse.from(userRepository.findAll());
     }
 
-    public User getOwnUserData() {
-        return userRepository.findByUserId(authenticateUser().getUserId())
-                .orElseThrow(UserNotFoundException::new);
+    public SingleUserDataResponse getOwnUserData() {
+        return SingleUserDataResponse.from(authenticateUser());
     }
 
     private User authenticateUser() {

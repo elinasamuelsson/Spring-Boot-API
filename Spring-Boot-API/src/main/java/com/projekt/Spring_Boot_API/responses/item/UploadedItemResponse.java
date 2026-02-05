@@ -4,14 +4,14 @@ import com.projekt.Spring_Boot_API.models.Item;
 
 import java.util.UUID;
 
-public record UploadedItemDTO(
+public record UploadedItemResponse(
         String itemName,
         int itemSizeBytes,
         UUID itemLocation,
         UUID itemOwner
 ) {
-    public static UploadedItemDTO from(Item item) {
-        return new UploadedItemDTO(
+    public static UploadedItemResponse from(Item item) {
+        return new UploadedItemResponse(
                 item.getItemName(),
                 item.getItemSizeBytes(),
                 item.getFolder().getFolderId(),
