@@ -20,9 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -39,9 +37,20 @@ public class UserService {
             throw new UsernameEmptyException();
         }
 
+        if (userRepository.findByUsername(request.username()).isPresent() ||
+                request.username().length() < 5) {
+            throw new UsernameNotApprovedException();
+        }
+
         if (request.password() == null ||
                 request.password().isEmpty()) {
             throw new PasswordEmptyException();
+        }
+
+        if (!request.password().matches(".*[0-9].*") &&
+                !request.password().matches(".*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>/?].*") ||
+                request.password().length() < 8) {
+            throw new PasswordNotApprovedException();
         }
 
         String passwordHash = passwordEncoder.encode(request.password());
@@ -112,7 +121,9 @@ public class UserService {
     }
 
     public SingleUserDataResponse getOwnUserData() {
-        return SingleUserDataResponse.from(authenticateUser());
+        return SingleUserDataResponse
+                .from(userRepository.findByUserId(authenticateUser().getUserId())
+                        .orElseThrow(UserNotFoundException::new));
     }
 
     private User authenticateUser() {

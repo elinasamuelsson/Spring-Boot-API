@@ -11,7 +11,6 @@ import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
 import com.projekt.Spring_Boot_API.repositories.IItemRepository;
 import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
-import com.projekt.Spring_Boot_API.requests.item.UploadItemRequest;
 import com.projekt.Spring_Boot_API.responses.item.UploadedItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;

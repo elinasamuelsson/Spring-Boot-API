@@ -8,7 +8,6 @@ import com.projekt.Spring_Boot_API.exceptions.folder.UnauthorizedFolderActionExc
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
-import com.projekt.Spring_Boot_API.repositories.IItemRepository;
 import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
 import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FolderService {
     private final IFolderRepository folderRepository;
-    private final IItemRepository itemRepository;
 
     public Folder createFolder(CreateFolderRequest request) {
         Folder parentFolder = folderRepository.findByFolderId(request.parentFolderId())

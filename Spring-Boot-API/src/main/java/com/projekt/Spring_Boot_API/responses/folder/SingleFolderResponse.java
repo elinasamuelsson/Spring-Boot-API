@@ -10,10 +10,16 @@ public record SingleFolderResponse(
         UUID parentFolderId
 ) {
     public static SingleFolderResponse from(Folder folder) {
+        UUID parentFolderId = null;
+
+        if (folder.getParentFolder() != null) {
+            parentFolderId = folder.getParentFolder().getFolderId();
+        }
+
         return new SingleFolderResponse(
                 folder.getFolderId(),
                 folder.getFolderName(),
-                folder.getParentFolder().getFolderId()
+                parentFolderId
         );
     }
 }
