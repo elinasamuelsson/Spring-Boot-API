@@ -16,11 +16,28 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+/**
+ * This service handles all logic related to folders.
+ *
+ * It manages creating, updating, deleting and sending folder data on request.
+ *
+ * @author Elina Samuelsson
+ * @version 1.0
+ */
 @Service
 @RequiredArgsConstructor
 public class FolderService {
     private final IFolderRepository folderRepository;
 
+    /**
+     * Creates new folders in a given parent folder, validates that the folder
+     * has a name, and assigns the authenticated user as the owner.
+     *
+     * @param request takes in the full request from FolderController to avoid sending multiple paramters for
+     *                better readability
+     * @throws FolderNotFoundException if the parent folder could not be found in the database
+     * @throws FolderNameEmptyException if the folderName field is empty
+     */
     public Folder createFolder(CreateFolderRequest request) {
         Folder parentFolder = folderRepository.findByFolderId(request.parentFolderId())
                 .orElseThrow(FolderNotFoundException::new);
@@ -37,10 +54,20 @@ public class FolderService {
         return folderRepository.save(folder);
     }
 
+    /**
+     * Updates the given folder's data.
+     *
+     * @param folderId takes in the id of the parent folder
+     * @param request takes in the full request from FolderController to avoid sending multiple parameters for
+     *                better readability
+     * @throws FolderNotFoundException if the parent folder could not be found in the database
+     * @throws UnauthorizedFolderActionException if a user tries to update a folder they are not the owner of
+     */
     public void updateFolder(UUID folderId, UpdateFolderRequest request) {
         Folder folder = folderRepository.findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
 
+        //if folder has no parent folder it has to be the root folder
         if (folder.getParentFolder() == null) {
             throw new UnauthorizedFolderActionException();
         }
@@ -63,10 +90,18 @@ public class FolderService {
         folderRepository.save(folder);
     }
 
+    /**
+     * Deletes a folder and all of its child folders and items from the database
+     *
+     * @param folderId takes in the folder's id
+     * @throws FolderNotFoundException if the folder could not be found in the database
+     * @throws UnauthorizedFolderActionException if the folder is the root folder
+     */
     public void deleteFolder(UUID folderId) {
         Folder folder = folderRepository.findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
 
+        //if folder has no parent folder it has to be the root folder
         if (folder.getParentFolder() == null) {
             throw new UnauthorizedFolderActionException();
         }
@@ -76,6 +111,14 @@ public class FolderService {
         folderRepository.delete(folder);
     }
 
+    /**
+     * Get the contents of a given folder.
+     *
+     * @param parentFolderId takes in the id of the folder whose contents will be viewed
+     * @return a fully built response DTO containing a list of child folders and a list
+     *         of child items
+     * @throws FolderNotFoundException if the folder could not be found in the database
+     */
     public FolderContentsResponse getContents(UUID parentFolderId) {
         Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
                 .orElseThrow(FolderNotFoundException::new);
@@ -88,6 +131,11 @@ public class FolderService {
         );
     }
 
+    /**
+     * Helper method that fetches the currently authenticated user.
+     *
+     * @return User object of the fetch result
+     */
     private User authenticateUser() {
         return (User) SecurityContextHolder
                 .getContext()
@@ -95,6 +143,13 @@ public class FolderService {
                 .getPrincipal();
     }
 
+    /**
+     * Helper function that checks a user's ownership of a given folder.
+     *
+     * @param user takes in a user object to compare with the owner of a folder
+     * @param folder takes in a folder object to compare with the user performing an action
+     * @throws OwnerFolderMismatchException if the user does not own the folder
+     */
     private void checkFolderOwnership(User user, Folder folder) {
         if (!user.getUserId()
                 .equals(folder.getUser().getUserId())) {

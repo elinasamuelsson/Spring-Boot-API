@@ -10,10 +10,9 @@ public class SpringBootApiApplication {
 		SpringApplication.run(SpringBootApiApplication.class, args);
 	}
 
+	// TODO: move service helper methods to a utils folder to minimize repetition
 	// TODO: full API test of all methods and mappings
-	// TODO: consider removing parentFolderId in SingleFolderResponse DTO
 	// TODO: consider removing getAllUsers method post testing
-	// TODO: clean code check, uniformity check, imports check etc.
-	// TODO: comments following Javadoc standards in all services
+	// TODO: clean code check, uniformity check, no dead imports check etc.
 
 }
