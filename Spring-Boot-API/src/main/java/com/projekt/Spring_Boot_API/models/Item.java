@@ -21,16 +21,13 @@ public class Item {
     @Column(name = "item_id")
     private UUID itemId;
 
-    @Column(name = "item_name",
-            nullable = false)
+    @Column(name = "item_name", nullable = false)
     private String itemName;
 
-    @Column(name = "item_contents",
-            nullable = false)
+    @Column(name = "item_contents", nullable = false)
     private byte[] itemContents;
 
-    @Column(name = "item_size",
-            nullable = false)
+    @Column(name = "item_size", nullable = false)
     private int itemSizeBytes;
 
     @ManyToOne

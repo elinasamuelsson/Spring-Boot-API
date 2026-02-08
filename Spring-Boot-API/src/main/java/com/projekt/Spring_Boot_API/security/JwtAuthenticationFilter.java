@@ -1,7 +1,6 @@
 package com.projekt.Spring_Boot_API.security;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.projekt.Spring_Boot_API.exceptions.user.UserNotFoundException;
 import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.repositories.IUserRepository;
 import jakarta.servlet.FilterChain;
@@ -10,13 +9,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,7 +59,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 user.getAuthorities()
         );
 
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        SecurityContextHolder
+                .getContext()
+                .setAuthentication(authToken);
 
         filterChain.doFilter(request, response);
     }

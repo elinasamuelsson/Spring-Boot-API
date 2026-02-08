@@ -28,8 +28,7 @@ public class JwtService {
      */
     private static final JWTVerifier verifier = JWT
             .require(ALGORITHM)
-            .withIssuer("Spring-Boot-API")
-            .build();
+            .withIssuer("Spring-Boot-API").build();
 
     /**
      * Uses the algorithm to generate a unique JWT to be used as a user's identification
@@ -39,7 +38,8 @@ public class JwtService {
      * @return a String with the generated token
      */
     public String generateToken(UUID userId) {
-        return JWT.create()
+        return JWT
+                .create()
                 .withIssuer("Spring-Boot-API")
                 .withIssuedAt(Instant.now())
                 .withExpiresAt(Instant.now().plus(60, ChronoUnit.MINUTES))

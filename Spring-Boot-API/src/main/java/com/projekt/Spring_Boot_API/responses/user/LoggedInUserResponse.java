@@ -9,6 +9,7 @@ public record LoggedInUserResponse(
     public static LoggedInUserResponse from(HashMap<String, String> credentials) {
         return new LoggedInUserResponse(
                 credentials.get("username"),
-                credentials.get("token"));
+                credentials.get("token")
+        );
     }
 }

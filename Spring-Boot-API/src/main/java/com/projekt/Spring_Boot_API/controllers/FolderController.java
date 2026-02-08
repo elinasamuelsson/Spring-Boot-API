@@ -31,17 +31,20 @@ public class FolderController {
     @PutMapping("/update/{folderId}")
     public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
                                           @RequestBody UpdateFolderRequest request) {
-        folderService.updateFolder(
-                folderId, request);
+        folderService.updateFolder(folderId, request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @DeleteMapping("/delete/{folderId}")
     public ResponseEntity<?> deleteFolder(@PathVariable UUID folderId) {
         folderService.deleteFolder(folderId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @GetMapping("/get-contents/{folderId}")

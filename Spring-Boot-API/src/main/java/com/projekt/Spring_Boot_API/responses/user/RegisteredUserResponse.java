@@ -9,9 +9,6 @@ public record RegisteredUserResponse(
         String username
 ) {
     public static RegisteredUserResponse from(User user) {
-        return new RegisteredUserResponse(
-                user.getUserId(),
-                user.getUsername()
-        );
+        return new RegisteredUserResponse(user.getUserId(), user.getUsername());
     }
 }

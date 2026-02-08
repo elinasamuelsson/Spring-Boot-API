@@ -3,7 +3,6 @@ package com.projekt.Spring_Boot_API.services;
 import com.projekt.Spring_Boot_API.responses.folder.FolderContentsResponse;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNameEmptyException;
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNotFoundException;
-import com.projekt.Spring_Boot_API.exceptions.folder.OwnerFolderMismatchException;
 import com.projekt.Spring_Boot_API.exceptions.folder.UnauthorizedFolderActionException;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.User;
@@ -11,10 +10,12 @@ import com.projekt.Spring_Boot_API.repositories.IFolderRepository;
 import com.projekt.Spring_Boot_API.requests.folder.CreateFolderRequest;
 import com.projekt.Spring_Boot_API.requests.folder.UpdateFolderRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+
+import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkFolderOwnership;
+import static com.projekt.Spring_Boot_API.utils.UserAuthenticator.authenticateUser;
 
 /**
  * This service handles all logic related to folders.
@@ -39,7 +40,8 @@ public class FolderService {
      * @throws FolderNameEmptyException if the folderName field is empty
      */
     public Folder createFolder(CreateFolderRequest request) {
-        Folder parentFolder = folderRepository.findByFolderId(request.parentFolderId())
+        Folder parentFolder = folderRepository
+                .findByFolderId(request.parentFolderId())
                 .orElseThrow(FolderNotFoundException::new);
 
         User user = authenticateUser();
@@ -64,7 +66,8 @@ public class FolderService {
      * @throws UnauthorizedFolderActionException if a user tries to update a folder they are not the owner of
      */
     public void updateFolder(UUID folderId, UpdateFolderRequest request) {
-        Folder folder = folderRepository.findByFolderId(folderId)
+        Folder folder = folderRepository
+                .findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
 
         //if folder has no parent folder it has to be the root folder
@@ -73,13 +76,15 @@ public class FolderService {
         }
 
         User user = authenticateUser();
-
         checkFolderOwnership(user, folder);
 
         if (request.parentFolderId() != null) {
-            Folder parentFolder = folderRepository.findByFolderId(request.parentFolderId())
+            Folder parentFolder = folderRepository
+                    .findByFolderId(request.parentFolderId())
                     .orElseThrow(FolderNotFoundException::new);
+
             checkFolderOwnership(user, parentFolder);
+
             folder.setParentFolder(parentFolder);
         }
 
@@ -98,7 +103,8 @@ public class FolderService {
      * @throws UnauthorizedFolderActionException if the folder is the root folder
      */
     public void deleteFolder(UUID folderId) {
-        Folder folder = folderRepository.findByFolderId(folderId)
+        Folder folder = folderRepository
+                .findByFolderId(folderId)
                 .orElseThrow(FolderNotFoundException::new);
 
         //if folder has no parent folder it has to be the root folder
@@ -120,40 +126,13 @@ public class FolderService {
      * @throws FolderNotFoundException if the folder could not be found in the database
      */
     public FolderContentsResponse getContents(UUID parentFolderId) {
-        Folder parentFolder = folderRepository.findByFolderId(parentFolderId)
+        Folder parentFolder = folderRepository
+                .findByFolderId(parentFolderId)
                 .orElseThrow(FolderNotFoundException::new);
 
         checkFolderOwnership(authenticateUser(), parentFolder);
 
-        return FolderContentsResponse.from(
-                parentFolder.getSubFolders(),
-                parentFolder.getItems()
-        );
-    }
-
-    /**
-     * Helper method that fetches the currently authenticated user.
-     *
-     * @return User object of the fetch result
-     */
-    private User authenticateUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-    }
-
-    /**
-     * Helper function that checks a user's ownership of a given folder.
-     *
-     * @param user takes in a user object to compare with the owner of a folder
-     * @param folder takes in a folder object to compare with the user performing an action
-     * @throws OwnerFolderMismatchException if the user does not own the folder
-     */
-    private void checkFolderOwnership(User user, Folder folder) {
-        if (!folder.getUser().getUserId()
-                .equals(user.getUserId())) {
-            throw new OwnerFolderMismatchException();
-        }
+        return FolderContentsResponse
+                .from(parentFolder.getSubFolders(), parentFolder.getItems());
     }
 }

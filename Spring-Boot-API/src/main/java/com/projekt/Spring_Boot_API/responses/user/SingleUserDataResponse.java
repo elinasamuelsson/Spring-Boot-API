@@ -12,7 +12,8 @@ public record SingleUserDataResponse(
         SingleFolderResponse rootFolder
 ) {
     public static SingleUserDataResponse from(User user) {
-        SingleFolderResponse rootFolder = user.getFolders().stream()
+        SingleFolderResponse rootFolder = user.getFolders()
+                .stream()
                 .filter(folder -> folder.getParentFolder() == null)
                 .map(SingleFolderResponse::from)
                 .findFirst()

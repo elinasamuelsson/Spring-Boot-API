@@ -9,8 +9,7 @@ public record AllUsersDataResponse(
 ) {
     public static AllUsersDataResponse from(List<User> users) {
         return new AllUsersDataResponse(
-                users
-                        .stream()
+                users.stream()
                         .map(SingleUserDataResponse::from)
                         .toList()
         );

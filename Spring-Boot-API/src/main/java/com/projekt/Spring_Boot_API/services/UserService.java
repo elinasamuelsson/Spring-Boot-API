@@ -15,12 +15,13 @@ import com.projekt.Spring_Boot_API.responses.user.SingleUserDataResponse;
 import com.projekt.Spring_Boot_API.security.JwtService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.projekt.Spring_Boot_API.utils.UserAuthenticator.authenticateUser;
 
 /**
  * This service handles all logic related to users.
@@ -81,9 +82,14 @@ public class UserService {
         );
 
         //creates a root folder for the newly registered user
-        folderRepository.save(new Folder("root", null, user));
+        folderRepository.save(new Folder(
+                "root",
+                null,
+                user)
+        );
 
-        return RegisteredUserResponse.from(user);
+        return RegisteredUserResponse
+                .from(user);
     }
 
     /**
@@ -98,17 +104,16 @@ public class UserService {
      * @throws InvalidCredentialsException if the given password doesn't match the stored password
      */
     public LoggedInUserResponse loginUser(LoginUserRequest request) {
-        if (request.username() == null ||
-                request.username().isEmpty()) {
+        if (request.username() == null || request.username().isEmpty()) {
             throw new UsernameEmptyException();
         }
 
-        if (request.password() == null ||
-                request.password().isEmpty()) {
+        if (request.password() == null || request.password().isEmpty()) {
             throw new PasswordEmptyException();
         }
 
-        User user = userRepository.findByUsername(request.username())
+        User user = userRepository
+                .findByUsername(request.username())
                 .orElseThrow(UserNotFoundException::new);
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
@@ -117,9 +122,11 @@ public class UserService {
 
         String token = jwtService.generateToken(user.getUserId());
 
-        return LoggedInUserResponse.from(new HashMap<>(Map.of(
-                "username", user.getUsername(),
-                "token", token)));
+        return LoggedInUserResponse
+                .from(new HashMap<>(Map.of(
+                        "username", user.getUsername(),
+                        "token", token))
+                );
     }
 
     /**
@@ -137,8 +144,7 @@ public class UserService {
         User authenticatedUser = authenticateUser();
 
         if (request.username() != null && !request.username().isBlank()) {
-            if (userRepository.findByUsername(request.username()).isPresent() ||
-                    request.username().length() < 5) {
+            if (userRepository.findByUsername(request.username()).isPresent() || request.username().length() < 5) {
                 throw new UsernameNotApprovedException();
             }
             authenticatedUser.setUsername(request.username());
@@ -173,7 +179,8 @@ public class UserService {
      *         userId, username, and root folder
      */
     public AllUsersDataResponse getAllUsers() {
-        return AllUsersDataResponse.from(userRepository.findAll());
+        return AllUsersDataResponse
+                .from(userRepository.findAll());
     }
 
     /**
@@ -183,19 +190,8 @@ public class UserService {
      */
     public SingleUserDataResponse getOwnUserData() {
         return SingleUserDataResponse
-                .from(userRepository.findByUserId(authenticateUser().getUserId())
+                .from(userRepository
+                        .findByUserId(authenticateUser().getUserId())
                         .orElseThrow(UserNotFoundException::new));
-    }
-
-    /**
-     * Helper method that fetches the currently authenticated user.
-     *
-     * @return User object of the fetch result
-     */
-    private User authenticateUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
     }
 }

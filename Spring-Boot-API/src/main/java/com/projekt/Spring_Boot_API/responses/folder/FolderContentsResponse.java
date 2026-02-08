@@ -12,8 +12,12 @@ public record FolderContentsResponse(
 ) {
     public static FolderContentsResponse from(List<Folder> folders, List<Item> items) {
         return new FolderContentsResponse(
-                folders.stream().map(SingleFolderResponse::from).toList(),
-                items.stream().map(SingleItemResponse::from).toList()
+                folders.stream()
+                        .map(SingleFolderResponse::from)
+                        .toList(),
+                items.stream()
+                        .map(SingleItemResponse::from)
+                        .toList()
         );
     }
 }

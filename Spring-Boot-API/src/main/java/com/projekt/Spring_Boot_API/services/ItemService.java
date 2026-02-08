@@ -1,10 +1,8 @@
 package com.projekt.Spring_Boot_API.services;
 
 import com.projekt.Spring_Boot_API.exceptions.folder.FolderNotFoundException;
-import com.projekt.Spring_Boot_API.exceptions.folder.OwnerFolderMismatchException;
 import com.projekt.Spring_Boot_API.exceptions.item.FileUploadFailException;
 import com.projekt.Spring_Boot_API.exceptions.item.ItemNotFoundException;
-import com.projekt.Spring_Boot_API.exceptions.item.OwnerItemMismatchException;
 import com.projekt.Spring_Boot_API.models.Folder;
 import com.projekt.Spring_Boot_API.models.Item;
 import com.projekt.Spring_Boot_API.models.User;
@@ -13,12 +11,15 @@ import com.projekt.Spring_Boot_API.repositories.IItemRepository;
 import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
 import com.projekt.Spring_Boot_API.responses.item.UploadedItemResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
+
+import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkFolderOwnership;
+import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkItemOwnership;
+import static com.projekt.Spring_Boot_API.utils.UserAuthenticator.authenticateUser;
 
 /**
  * This service handles all logic related to items.
@@ -52,7 +53,8 @@ public class ItemService {
 
         User owner = authenticateUser();
 
-        Folder location = folderRepository.findByFolderId(locationId)
+        Folder location = folderRepository
+                .findByFolderId(locationId)
                 .orElseThrow(FolderNotFoundException::new);
 
         checkFolderOwnership(owner, location);
@@ -62,11 +64,11 @@ public class ItemService {
                 fileBytes,
                 (int) file.getSize(),
                 location,
-                owner);
-
-        return UploadedItemResponse.from(
-                itemRepository.save(item)
+                owner
         );
+
+        return UploadedItemResponse
+                .from(itemRepository.save(item));
     }
 
     /**
@@ -79,15 +81,16 @@ public class ItemService {
      * @throws FolderNotFoundException if the parent folder could not be found in the database
      */
     public void updateItem(UUID itemId, UpdateItemRequest request) {
-        Item item = itemRepository.findByItemId(itemId)
+        Item item = itemRepository
+                .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
         User user = authenticateUser();
-
         checkItemOwnership(user, item);
 
         if (request.itemLocationId() != null) {
-            Folder folder = folderRepository.findByFolderId(request.itemLocationId())
+            Folder folder = folderRepository
+                    .findByFolderId(request.itemLocationId())
                     .orElseThrow(FolderNotFoundException::new);
 
             checkFolderOwnership(user, folder);
@@ -109,11 +112,11 @@ public class ItemService {
      * @throws ItemNotFoundException if the item could not be found in the database
      */
     public void deleteItem(UUID itemId) {
-        Item item = itemRepository.findByItemId(itemId)
+        Item item = itemRepository
+                .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
         User user = authenticateUser();
-
         checkItemOwnership(user, item);
 
         itemRepository.delete(item);
@@ -127,53 +130,13 @@ public class ItemService {
      * @throws ItemNotFoundException if the item could not be found in the database
      */
     public Item downloadItem(UUID itemId) {
-        Item item = itemRepository.findByItemId(itemId)
+        Item item = itemRepository
+                .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
         User user = authenticateUser();
-
         checkItemOwnership(user, item);
 
         return item;
-    }
-
-    /**
-     * Helper method that fetches the currently authenticated user.
-     *
-     * @return User object of the fetch result
-     */
-    private User authenticateUser() {
-        return (User) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-    }
-
-    /**
-     * Helper function that checks a user's ownership of a given item.
-     *
-     * @param user takes in a user object to compare with the owner of an item
-     * @param item takes in an item object to compare with the user performing an action
-     * @throws OwnerItemMismatchException if the user does not own the item
-     */
-    private void checkItemOwnership(User user, Item item) {
-        if (!item.getUser().getUserId()
-                .equals(user.getUserId())) {
-            throw new OwnerItemMismatchException();
-        }
-    }
-
-    /**
-     * Helper function that checks a user's ownership of a given folder.
-     *
-     * @param user takes in a user object to compare with the owner of a folder
-     * @param folder takes in a folder object to compare with the user performing an action
-     * @throws OwnerFolderMismatchException if the user does not own the folder
-     */
-    private void checkFolderOwnership(User user, Folder folder) {
-        if (!folder.getUser().getUserId()
-                .equals(user.getUserId())) {
-            throw new OwnerFolderMismatchException();
-        }
     }
 }

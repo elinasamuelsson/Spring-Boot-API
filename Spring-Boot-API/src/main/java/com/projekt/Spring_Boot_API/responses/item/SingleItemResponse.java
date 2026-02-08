@@ -1,7 +1,6 @@
 package com.projekt.Spring_Boot_API.responses.item;
 
 import com.projekt.Spring_Boot_API.models.Item;
-import com.projekt.Spring_Boot_API.models.User;
 
 import java.util.UUID;
 

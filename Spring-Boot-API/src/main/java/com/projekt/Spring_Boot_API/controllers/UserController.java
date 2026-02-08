@@ -4,7 +4,6 @@ import com.projekt.Spring_Boot_API.responses.user.AllUsersDataResponse;
 import com.projekt.Spring_Boot_API.responses.user.SingleUserDataResponse;
 import com.projekt.Spring_Boot_API.responses.user.LoggedInUserResponse;
 import com.projekt.Spring_Boot_API.responses.user.RegisteredUserResponse;
-import com.projekt.Spring_Boot_API.models.User;
 import com.projekt.Spring_Boot_API.requests.user.LoginUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.RegisterUserRequest;
 import com.projekt.Spring_Boot_API.requests.user.UpdateUserRequest;
@@ -13,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -44,14 +41,18 @@ public class UserController {
     public ResponseEntity<?> updateUser(@RequestBody UpdateUserRequest request) {
         userService.updateUser(request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<?> deleteUser() {
         userService.deleteUser();
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .ok()
+                .build();
     }
 
     @GetMapping("/get-all")

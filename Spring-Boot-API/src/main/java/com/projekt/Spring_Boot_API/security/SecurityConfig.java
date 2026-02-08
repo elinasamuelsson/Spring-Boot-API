@@ -18,15 +18,15 @@ public class SecurityConfig {
             IUserRepository userRepository,
             JwtService jwtService
     ) {
-        http.csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> {
-                    auth
-                            .requestMatchers("/api/users/register").permitAll()
-                            .requestMatchers("/api/users/login").permitAll()
-                            .anyRequest().authenticated();
-                })
-                .addFilterBefore(
-                        new JwtAuthenticationFilter(userRepository, jwtService),
+            auth
+                    .requestMatchers("/api/users/register").permitAll()
+                    .requestMatchers("/api/users/login").permitAll()
+                    .anyRequest().authenticated();
+        })
+                .addFilterBefore(new JwtAuthenticationFilter(userRepository, jwtService),
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
