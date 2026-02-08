@@ -151,8 +151,8 @@ public class FolderService {
      * @throws OwnerFolderMismatchException if the user does not own the folder
      */
     private void checkFolderOwnership(User user, Folder folder) {
-        if (!user.getUserId()
-                .equals(folder.getUser().getUserId())) {
+        if (!folder.getUser().getUserId()
+                .equals(user.getUserId())) {
             throw new OwnerFolderMismatchException();
         }
     }

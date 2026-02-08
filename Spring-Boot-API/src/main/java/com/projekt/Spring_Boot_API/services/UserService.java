@@ -54,18 +54,15 @@ public class UserService {
      */
     @Transactional
     public RegisteredUserResponse registerUser(RegisterUserRequest request) {
-        if (request.username() == null ||
-                request.username().isEmpty()) {
+        if (request.username() == null || request.username().isEmpty()) {
             throw new UsernameEmptyException();
         }
 
-        if (userRepository.findByUsername(request.username()).isPresent() ||
-                request.username().length() < 5) {
+        if (userRepository.findByUsername(request.username()).isPresent() || request.username().length() < 5) {
             throw new UsernameNotApprovedException();
         }
 
-        if (request.password() == null ||
-                request.password().isEmpty()) {
+        if (request.password() == null || request.password().isEmpty()) {
             throw new PasswordEmptyException();
         }
 
@@ -114,20 +111,15 @@ public class UserService {
         User user = userRepository.findByUsername(request.username())
                 .orElseThrow(UserNotFoundException::new);
 
-        if (!passwordEncoder.matches(
-                request.password(),
-                user.getPasswordHash())) {
+        if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
             throw new InvalidCredentialsException();
         }
 
         String token = jwtService.generateToken(user.getUserId());
 
-        return LoggedInUserResponse.from(
-                new HashMap<>(Map.of(
-                        "username", user.getUsername(),
-                        "token", token
-                ))
-        );
+        return LoggedInUserResponse.from(new HashMap<>(Map.of(
+                "username", user.getUsername(),
+                "token", token)));
     }
 
     /**

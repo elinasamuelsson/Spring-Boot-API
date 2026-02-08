@@ -53,7 +53,7 @@ public class ItemService {
         User owner = authenticateUser();
 
         Folder location = folderRepository.findByFolderId(locationId)
-                .orElseThrow(FolderNameEmptyException::new);
+                .orElseThrow(FolderNotFoundException::new);
 
         checkFolderOwnership(owner, location);
 
@@ -88,7 +88,7 @@ public class ItemService {
 
         if (request.itemLocationId() != null) {
             Folder folder = folderRepository.findByFolderId(request.itemLocationId())
-                    .orElseThrow(FolderNameEmptyException::new);
+                    .orElseThrow(FolderNotFoundException::new);
 
             checkFolderOwnership(user, folder);
 
