@@ -16,19 +16,23 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(
             HttpSecurity http,
             IUserRepository userRepository,
-            JwtService jwtService
-    ) {
+            JwtService jwtService,
+            Oauth2SuccessHandler oauth2SuccessHandler) {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> {
-            auth
-                    .requestMatchers("/api/users/register").permitAll()
-                    .requestMatchers("/api/users/login").permitAll()
-                    .anyRequest().authenticated();
-        })
-                .addFilterBefore(new JwtAuthenticationFilter(userRepository, jwtService),
-                        UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/users/register").permitAll()
+                        .requestMatchers("/api/users/login").permitAll()
+                        .anyRequest().authenticated()
+                )
+
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(oauth2SuccessHandler)
+                )
+
+                        .addFilterBefore(new JwtAuthenticationFilter(userRepository, jwtService), UsernamePasswordAuthenticationFilter.class);
+
+            return http.build();
+        }
     }
-}
