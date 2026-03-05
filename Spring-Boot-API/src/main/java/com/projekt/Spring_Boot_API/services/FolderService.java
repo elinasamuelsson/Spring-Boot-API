@@ -44,7 +44,7 @@ public class FolderService {
                 .findByFolderId(request.parentFolderId())
                 .orElseThrow(FolderNotFoundException::new);
 
-        User user = authenticateUser();
+        User user = (User) authenticateUser();
         checkFolderOwnership(user, parentFolder);
 
         if (request.folderName() == null || request.folderName().isBlank()) {
@@ -75,7 +75,7 @@ public class FolderService {
             throw new UnauthorizedFolderActionException();
         }
 
-        User user = authenticateUser();
+        User user = (User) authenticateUser();
         checkFolderOwnership(user, folder);
 
         if (request.parentFolderId() != null) {
@@ -112,7 +112,7 @@ public class FolderService {
             throw new UnauthorizedFolderActionException();
         }
 
-        checkFolderOwnership(authenticateUser(), folder);
+        checkFolderOwnership((User) authenticateUser(), folder);
 
         folderRepository.delete(folder);
     }
@@ -130,7 +130,7 @@ public class FolderService {
                 .findByFolderId(parentFolderId)
                 .orElseThrow(FolderNotFoundException::new);
 
-        checkFolderOwnership(authenticateUser(), parentFolder);
+        checkFolderOwnership((User) authenticateUser(), parentFolder);
 
         return FolderContentsResponse
                 .from(parentFolder.getSubFolders(), parentFolder.getItems());

@@ -51,7 +51,7 @@ public class ItemService {
             throw new FileUploadFailException();
         }
 
-        User owner = authenticateUser();
+        User owner = (User) authenticateUser();
 
         Folder location = folderRepository
                 .findByFolderId(locationId)
@@ -85,7 +85,7 @@ public class ItemService {
                 .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
-        User user = authenticateUser();
+        User user = (User) authenticateUser();
         checkItemOwnership(user, item);
 
         if (request.itemLocationId() != null) {
@@ -116,7 +116,7 @@ public class ItemService {
                 .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
-        User user = authenticateUser();
+        User user = (User) authenticateUser();
         checkItemOwnership(user, item);
 
         itemRepository.delete(item);
@@ -134,7 +134,7 @@ public class ItemService {
                 .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
-        User user = authenticateUser();
+        User user = (User) authenticateUser();
         checkItemOwnership(user, item);
 
         return item;

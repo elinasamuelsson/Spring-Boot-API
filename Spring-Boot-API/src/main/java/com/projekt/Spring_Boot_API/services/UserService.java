@@ -141,7 +141,7 @@ public class UserService {
      * @throws PasswordNotApprovedException if the password doesn't match given parameters
      */
     public void updateUser(UpdateUserRequest request) {
-        User authenticatedUser = authenticateUser();
+        User authenticatedUser = (User) authenticateUser();
 
         if (request.username() != null && !request.username().isBlank()) {
             if (userRepository.findByUsername(request.username()).isPresent() || request.username().length() < 5) {
@@ -168,7 +168,7 @@ public class UserService {
      * Deletes the logged-in user's data from the database.
      */
     public void deleteUser() {
-        User authenticatedUser = authenticateUser();
+        User authenticatedUser = (User) authenticateUser();
 
         userRepository.delete(authenticatedUser);
     }
@@ -189,9 +189,11 @@ public class UserService {
      * @throws UserNotFoundException if the user could not be found in the database
      */
     public SingleUserDataResponse getOwnUserData() {
+        User user = (User) authenticateUser();
+
         return SingleUserDataResponse
                 .from(userRepository
-                        .findByUserId(authenticateUser().getUserId())
+                        .findByUserId(user.getUserId())
                         .orElseThrow(UserNotFoundException::new));
     }
 }
