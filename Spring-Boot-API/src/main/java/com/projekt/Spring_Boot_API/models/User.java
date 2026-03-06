@@ -29,8 +29,14 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash")
     private String passwordHash;
+
+    @Column(unique = true)
+    private String oidcId;
+
+    @Column
+    private String oidcProvider;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
@@ -42,6 +48,12 @@ public class User implements UserDetails {
     public User(String username, String passwordHash) {
         this.username = username;
         this.passwordHash = passwordHash;
+    }
+
+    public User(String username, String oidcId, String oidcProvider) {
+        this.username = username;
+        this.oidcId = oidcId;
+        this.oidcProvider = oidcProvider;
     }
 
     @Override

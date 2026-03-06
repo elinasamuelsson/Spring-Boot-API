@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.projekt.Spring_Boot_API.utils.UserAuthenticator.authenticateUser;
 
@@ -90,6 +91,33 @@ public class UserService {
 
         return RegisteredUserResponse
                 .from(user);
+    }
+
+    /**
+     * Registers new users coming in via Oauth, validates the username doesn't already exist,
+     * calls on userRepository to save, and lastly creates a root folder for the user.
+     *
+     * @param email takes in email to be used as the username
+     * @param oidcId takes in the oidcId for the user provided by the Oauth provider
+     * @param oidcProvider takes in who Oauth provider is
+     * @return the newly created and saved user
+     * @throws UsernameNotApprovedException if the username doesn't match given parameters,
+     *                                      or already exists in the database
+     */
+    public User registerOidcUser(String email, String oidcId, String oidcProvider) {
+        if (userRepository.findByUsername(email).isPresent()) {
+            throw new UsernameNotApprovedException();
+        }
+
+        User user = userRepository.save(new User(email, oidcId, oidcProvider));
+
+        folderRepository.save(new Folder(
+                "root",
+                null,
+                user)
+        );
+
+        return user;
     }
 
     /**
@@ -195,5 +223,9 @@ public class UserService {
                 .from(userRepository
                         .findByUserId(user.getUserId())
                         .orElseThrow(UserNotFoundException::new));
+    }
+
+    public Optional<User> getUserByOidcId(String oidcId, String oidcProvider) {
+        return userRepository.findByOidcIdAndOidcProvider(oidcId, oidcProvider);
     }
 }

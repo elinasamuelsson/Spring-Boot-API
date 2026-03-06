@@ -31,8 +31,8 @@ public class SecurityConfig {
                         .successHandler(oauth2SuccessHandler)
                 )
 
-                        .addFilterBefore(new JwtAuthenticationFilter(userRepository, jwtService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(userRepository, jwtService), UsernamePasswordAuthenticationFilter.class);
 
-            return http.build();
-        }
+        return http.build();
     }
+}
