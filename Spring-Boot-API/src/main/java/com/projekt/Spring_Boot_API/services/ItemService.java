@@ -17,8 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.UUID;
 
-import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkFolderOwnership;
-import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkItemOwnership;
+import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.*;
 import static com.projekt.Spring_Boot_API.utils.UserAuthenticator.authenticateUser;
 
 /**
@@ -57,7 +56,7 @@ public class ItemService {
                 .findByFolderId(locationId)
                 .orElseThrow(FolderNotFoundException::new);
 
-        checkFolderOwnership(owner, location);
+        checkUserFolderOwnership(owner, location);
 
         Item item = new Item(
                 file.getOriginalFilename(),
@@ -80,22 +79,26 @@ public class ItemService {
      * @throws ItemNotFoundException if the item could not be found in the database
      * @throws FolderNotFoundException if the parent folder could not be found in the database
      */
-    public void updateItem(UUID itemId, UpdateItemRequest request) {
+    public void updateItem(UUID itemId, UUID currentFolderId, UpdateItemRequest request) {
         Item item = itemRepository
                 .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
-        User user = (User) authenticateUser();
-        checkItemOwnership(user, item);
+        Folder currentFolder = folderRepository.findByFolderId(currentFolderId)
+                .orElseThrow(FolderNotFoundException::new);
+        checkFolderItemOwnership(currentFolder, item);
 
-        if (request.itemLocationId() != null) {
-            Folder folder = folderRepository
-                    .findByFolderId(request.itemLocationId())
+        User user = (User) authenticateUser();
+        checkUserItemOwnership(user, item);
+
+        if (request.newFolderId() != null) {
+            Folder newFolder = folderRepository
+                    .findByFolderId(request.newFolderId())
                     .orElseThrow(FolderNotFoundException::new);
 
-            checkFolderOwnership(user, folder);
+            checkUserFolderOwnership(user, newFolder);
 
-            item.setFolder(folder);
+            item.setFolder(newFolder);
         }
 
         if (request.itemName() != null && !request.itemName().isBlank()) {
@@ -111,13 +114,17 @@ public class ItemService {
      * @param itemId takes in the item to be deleted
      * @throws ItemNotFoundException if the item could not be found in the database
      */
-    public void deleteItem(UUID itemId) {
+    public void deleteItem(UUID itemId, UUID folderId) {
         Item item = itemRepository
                 .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
+        Folder currentFolder = folderRepository.findByFolderId(folderId)
+                .orElseThrow(FolderNotFoundException::new);
+        checkFolderItemOwnership(currentFolder, item);
+
         User user = (User) authenticateUser();
-        checkItemOwnership(user, item);
+        checkUserItemOwnership(user, item);
 
         itemRepository.delete(item);
     }
@@ -129,13 +136,17 @@ public class ItemService {
      * @return an Item object
      * @throws ItemNotFoundException if the item could not be found in the database
      */
-    public Item downloadItem(UUID itemId) {
+    public Item downloadItem(UUID itemId, UUID folderId) {
         Item item = itemRepository
                 .findByItemId(itemId)
                 .orElseThrow(ItemNotFoundException::new);
 
+        Folder folder = folderRepository.findByFolderId(folderId)
+                .orElseThrow(FolderNotFoundException::new);
+        checkFolderItemOwnership(folder, item);
+
         User user = (User) authenticateUser();
-        checkItemOwnership(user, item);
+        checkUserItemOwnership(user, item);
 
         return item;
     }

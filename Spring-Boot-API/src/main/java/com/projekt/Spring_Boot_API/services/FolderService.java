@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkFolderOwnership;
+import static com.projekt.Spring_Boot_API.utils.OwnershipValidator.checkUserFolderOwnership;
 import static com.projekt.Spring_Boot_API.utils.UserAuthenticator.authenticateUser;
 
 /**
@@ -45,7 +45,7 @@ public class FolderService {
                 .orElseThrow(FolderNotFoundException::new);
 
         User user = (User) authenticateUser();
-        checkFolderOwnership(user, parentFolder);
+        checkUserFolderOwnership(user, parentFolder);
 
         if (request.folderName() == null || request.folderName().isBlank()) {
             throw new FolderNameEmptyException();
@@ -76,14 +76,14 @@ public class FolderService {
         }
 
         User user = (User) authenticateUser();
-        checkFolderOwnership(user, folder);
+        checkUserFolderOwnership(user, folder);
 
         if (request.parentFolderId() != null) {
             Folder parentFolder = folderRepository
                     .findByFolderId(request.parentFolderId())
                     .orElseThrow(FolderNotFoundException::new);
 
-            checkFolderOwnership(user, parentFolder);
+            checkUserFolderOwnership(user, parentFolder);
 
             folder.setParentFolder(parentFolder);
         }
@@ -112,7 +112,7 @@ public class FolderService {
             throw new UnauthorizedFolderActionException();
         }
 
-        checkFolderOwnership((User) authenticateUser(), folder);
+        checkUserFolderOwnership((User) authenticateUser(), folder);
 
         folderRepository.delete(folder);
     }
@@ -130,7 +130,7 @@ public class FolderService {
                 .findByFolderId(parentFolderId)
                 .orElseThrow(FolderNotFoundException::new);
 
-        checkFolderOwnership((User) authenticateUser(), parentFolder);
+        checkUserFolderOwnership((User) authenticateUser(), parentFolder);
 
         return FolderContentsResponse
                 .from(parentFolder.getSubFolders(), parentFolder.getItems());
