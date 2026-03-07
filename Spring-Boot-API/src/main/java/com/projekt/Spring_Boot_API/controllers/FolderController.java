@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/folders")
+@RequestMapping("/api/users/me/folders")
 @RequiredArgsConstructor
 public class FolderController {
     private final FolderService folderService;
 
-    @PostMapping("/create")
+    @PostMapping
     public ResponseEntity<CreatedFolderResponse> createFolder(@RequestBody CreateFolderRequest request) {
         Folder folder = folderService.createFolder(request);
 
@@ -28,8 +28,8 @@ public class FolderController {
                 .body(CreatedFolderResponse.from(folder));
     }
 
-    @PutMapping("/update/{folderId}")
-    public ResponseEntity<?> updateFolder(@PathVariable UUID folderId,
+    @PutMapping("/{folderId}")
+    public ResponseEntity<Void> updateFolder(@PathVariable UUID folderId,
                                           @RequestBody UpdateFolderRequest request) {
         folderService.updateFolder(folderId, request);
 
@@ -38,8 +38,8 @@ public class FolderController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{folderId}")
-    public ResponseEntity<?> deleteFolder(@PathVariable UUID folderId) {
+    @DeleteMapping("/{folderId}")
+    public ResponseEntity<Void> deleteFolder(@PathVariable UUID folderId) {
         folderService.deleteFolder(folderId);
 
         return ResponseEntity
@@ -47,7 +47,7 @@ public class FolderController {
                 .build();
     }
 
-    @GetMapping("/get-contents/{folderId}")
+    @GetMapping("/{folderId}")
     public ResponseEntity<FolderContentsResponse> getContents(@PathVariable UUID folderId) {
 
         FolderContentsResponse dto = folderService.getContents(folderId);
