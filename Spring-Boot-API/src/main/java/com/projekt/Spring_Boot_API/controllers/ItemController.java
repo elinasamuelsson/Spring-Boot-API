@@ -5,6 +5,7 @@ import com.projekt.Spring_Boot_API.models.Item;
 import com.projekt.Spring_Boot_API.requests.item.UpdateItemRequest;
 import com.projekt.Spring_Boot_API.services.ItemService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/users/me/folders")
 @RequiredArgsConstructor
@@ -21,13 +25,18 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping("/{folderId}/items")
-    public ResponseEntity<UploadedItemResponse> uploadItem(@PathVariable UUID folderId,
+    public ResponseEntity<EntityModel<UploadedItemResponse>> uploadItem(@PathVariable UUID folderId,
                                                            @RequestParam("file") MultipartFile file) {
         UploadedItemResponse response = itemService.uploadItem(folderId, file);
 
+        EntityModel<UploadedItemResponse> model = EntityModel.of(
+                response,
+                linkTo(methodOn(ItemController.class).downloadItem(folderId, response.itemId())).withRel("item")
+        );
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(response);
+                .body(model);
     }
 
     @PutMapping("/{folderId}/items/{itemId}")

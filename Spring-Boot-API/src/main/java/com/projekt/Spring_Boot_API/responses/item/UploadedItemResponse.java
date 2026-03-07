@@ -8,14 +8,16 @@ public record UploadedItemResponse(
         String itemName,
         int itemSizeBytes,
         UUID itemLocation,
-        UUID itemOwner
+        UUID itemOwner,
+        UUID itemId
 ) {
     public static UploadedItemResponse from(Item item) {
         return new UploadedItemResponse(
                 item.getItemName(),
                 item.getItemSizeBytes(),
                 item.getFolder().getFolderId(),
-                item.getUser().getUserId()
+                item.getUser().getUserId(),
+                item.getItemId()
         );
     }
 }
