@@ -34,8 +34,9 @@ public class FolderService {
      * Creates new folders in a given parent folder, validates that the folder
      * has a name, and assigns the authenticated user as the owner.
      *
-     * @param request takes in the full request from FolderController to avoid sending multiple paramters for
-     *                better readability
+     * @param request takes in the full request from FolderController to avoid sending multiple
+     *                parameters for better readability
+     * @return the fully built folder post save
      * @throws FolderNotFoundException if the parent folder could not be found in the database
      * @throws FolderNameEmptyException if the folderName field is empty
      */

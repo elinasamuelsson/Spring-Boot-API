@@ -39,6 +39,7 @@ public class ItemService {
      *
      * @param locationId takes in the id of the item's parent folder
      * @param file takes in the file to be uploaded
+     * @return a fully built response DTO containing details on the newly uploaded item
      * @throws FileUploadFailException if the file has failed to upload
      * @throws FolderNotFoundException if the parent folder could not be found in the database
      */
@@ -74,6 +75,7 @@ public class ItemService {
      * Updates the given item's data.
      *
      * @param itemId takes in the id of the item to be modified
+     * @param currentFolderId takes in the id of the folder the item is located in
      * @param request takes in the full request from ItemController to avoid sending multiple parameters for
      *                better readability
      * @throws ItemNotFoundException if the item could not be found in the database
@@ -112,7 +114,9 @@ public class ItemService {
      * Deletes the item from the database.
      *
      * @param itemId takes in the item to be deleted
+     * @param folderId takes in the id of the folder the item is located in
      * @throws ItemNotFoundException if the item could not be found in the database
+     * @throws FolderNotFoundException if the folder could not be found in the database
      */
     public void deleteItem(UUID itemId, UUID folderId) {
         Item item = itemRepository
@@ -133,8 +137,10 @@ public class ItemService {
      * Gets a single item.
      *
      * @param itemId takes in the id of the item to be viewed/downloaded
+     * @param folderId takes in the id of the folder the item is located in
      * @return an Item object
      * @throws ItemNotFoundException if the item could not be found in the database
+     * @throws FolderNotFoundException if the folder could not be found in the database
      */
     public Item downloadItem(UUID itemId, UUID folderId) {
         Item item = itemRepository
